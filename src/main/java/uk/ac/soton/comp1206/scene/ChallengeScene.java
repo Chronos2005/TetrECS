@@ -8,7 +8,11 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.Multimedia;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBoard;
+import uk.ac.soton.comp1206.component.PieceBoard;
+import uk.ac.soton.comp1206.event.NextPieceListener;
 import uk.ac.soton.comp1206.game.Game;
+import uk.ac.soton.comp1206.game.GamePiece;
+import uk.ac.soton.comp1206.game.Grid;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
@@ -50,8 +54,10 @@ public class ChallengeScene extends BaseScene {
 
         var mainPane = new BorderPane();
         challengePane.getChildren().add(mainPane);
+        Grid grid = new Grid(3,3);
 
         var board = new GameBoard(game.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
+        PieceBoard pieceBoard= new PieceBoard(grid,gameWindow.getWidth()/5,gameWindow.getHeight()/5);
         mainPane.setCenter(board);
         VBox menuPane = new VBox();
 
@@ -69,11 +75,19 @@ public class ChallengeScene extends BaseScene {
         levelLabel.textProperty().bind(Bindings.concat("Level: ").concat(game.levelProperty().asString()));
         multiplier.textProperty().bind(Bindings.concat("Multiplier: ").concat(game.multiplierProperty().asString()));
 
-        menuPane.getChildren().addAll(scoreLabel, livesLabel, multiplier, levelLabel);
+        menuPane.getChildren().addAll(scoreLabel, livesLabel, multiplier, levelLabel,pieceBoard);
         mainPane.setRight(menuPane);
 
         multimedia = new Multimedia();
         multimedia.playMusic("game.wav");
+        // Create a NextPieceListener inside ChallengeScene
+        game.setNextPieceListener(new NextPieceListener() {
+            @Override
+            public void nextPiece(GamePiece piece) {
+                // Call a method in PieceBoard to display the new piece
+                pieceBoard.settingPieceToDisplay(piece);
+            }
+        });
 
 
 

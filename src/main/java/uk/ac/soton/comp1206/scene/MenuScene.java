@@ -99,6 +99,7 @@ public class MenuScene extends BaseScene {
      * @param event
      */
     private void openInstructions(ActionEvent event){
+        logger.info("Attempting to open the instructions page");
         gameWindow.startInstruction();
     }
 

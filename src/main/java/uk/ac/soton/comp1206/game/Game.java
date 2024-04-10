@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
+import uk.ac.soton.comp1206.event.NextPieceListener;
 
 import java.util.Random;
 
@@ -20,7 +21,8 @@ public class Game {
     private IntegerProperty multiplier;
     private Random random = new  Random();
     private static final Logger logger = LogManager.getLogger(Game.class);
-    //private nextPeceListener
+
+    private NextPieceListener nextPieceListener;
 
     /**
      * Number of rows
@@ -123,6 +125,10 @@ public class Game {
      public GamePiece nextPiece(){
         curentPiece = spawmPiece();
         logger.info("The next piece is: {}", curentPiece);
+        if(nextPieceListener!=null){
+            nextPieceListener.nextPiece(curentPiece);
+        }
+        nextPieceListener.nextPiece(curentPiece);
         return curentPiece;
      }
 
@@ -173,5 +179,9 @@ public class Game {
 
     public void setMultiplier(int multiplier) {
         this.multiplier.set(multiplier);
+    }
+
+    public void setNextPieceListener(NextPieceListener nextPieceListener){
+        this.nextPieceListener= nextPieceListener;
     }
 }
