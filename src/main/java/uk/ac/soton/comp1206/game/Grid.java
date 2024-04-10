@@ -2,6 +2,8 @@ package uk.ac.soton.comp1206.game;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The Grid is a model which holds the state of a game board. It is made up of a set of Integer values arranged in a 2D
@@ -16,6 +18,7 @@ import javafx.beans.property.SimpleIntegerProperty;
  */
 public class Grid {
 
+    private static final Logger logger = LogManager.getLogger(Grid.class);
     /**
      * The number of columns in this grid
      */
@@ -101,6 +104,96 @@ public class Grid {
      */
     public int getRows() {
         return rows;
+    }
+
+    /**
+     *Check Whether a piece can be played un the gird at the given x,y position
+     * @param piece the piece to play
+     * @param positionX position X
+     * @param positionY position Y
+     * @return whether the piece can be played or not
+     */
+    public boolean canPlayPiece(GamePiece piece,int positionX, int positionY){
+        logger.info("Checking if the piece can be played");
+        int[][] blocks = piece.getBlocks();
+        for(var blockX=0; blockX<blocks.length; blockX++){
+            for(var blockY=0; blockY<blocks.length;blockY++){
+                var blockValue = blocks[blockX][blockY];
+                if(blockValue>0){
+                    var gridValue = get(positionX+blockX-1,positionY+blockY-1);
+                    if(gridValue!= 0)return false;
+                }
+            }
+        }
+        return true;
+
+    }
+
+    /**
+     * Play a piece by updating the grid by adding the pice to the grid
+     * @param piece the piece being played
+     * @param positionX postion X
+     * @param positionY position Y
+     */
+    public void playPiece(GamePiece piece,int positionX, int positionY){
+        logger.info("Playing the piece");
+        int value =piece.getValue();
+        int[][] blocks = piece.getBlocks();
+
+        for(var blockX=0; blockX<blocks.length; blockX++){
+            for(var blockY=0; blockY<blocks.length;blockY++){
+                var blockValue = blocks[blockX][blockY];
+                if(blockValue>0){
+                    set(positionX+blockX-1,positionY+blockY-1,value);
+                }
+            }
+        }
+        afterPiece();
+
+    }
+
+    public void afterPiece(){
+        int counterx =0;
+        for(var x=0; x<cols;x++){
+            for (var y =0 ; y<rows;y++){
+                if(get(x,y)==0)break;
+                counterx++;
+            }
+            if (counterx ==rows){
+                clearColumn(x);
+            }
+
+        }
+
+        int countery = 0;
+        for(var y =0;y<rows;y++){
+            for(var x =0; x<cols;x++){
+                if(get(x,y)==0)break;
+                countery++;
+            }
+            if(countery==cols){
+                clearRow(y);
+            }
+        }
+
+
+
+
+
+    }
+
+    public void clearColumn(int x){
+        logger.info("Clearing a column");
+        for (var y=0;y<cols;y++){
+            set(x,y,0);
+        }
+    }
+
+    public void clearRow(int y){
+        logger.info("Clearing a Row");
+        for (var x=0;x<rows;x++){
+            set(x,y,0);
+        }
     }
 
 }

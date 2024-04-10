@@ -2,6 +2,7 @@ package uk.ac.soton.comp1206.ui;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -111,6 +112,10 @@ public class GameWindow {
 
         //Initialise the scene when ready
         Platform.runLater(() -> currentScene.initialise());
+        scene.setOnKeyPressed((event -> {if (event.getCode() == KeyCode.ESCAPE) {
+            // Switch back to the menu scene when ESC key is pressed
+            startMenu();
+        }}));
     }
 
     /**
@@ -160,4 +165,22 @@ public class GameWindow {
     public Communicator getCommunicator() {
         return communicator;
     }
+
+    /**
+     * Opens the Instructions Page
+     */
+    public void startInstruction(){
+        loadScene(new InstructionsScene(this));
+    }
+
+    /**
+     * Closes the game
+     */
+    public void closeGame(){
+        stage.close();
+    }
+
+
+
+
 }
