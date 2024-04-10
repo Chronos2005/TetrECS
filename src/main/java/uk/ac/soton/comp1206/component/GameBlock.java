@@ -117,7 +117,7 @@ public class GameBlock extends Canvas {
      */
     private void paintEmpty() {
         var gc = getGraphicsContext2D();
-
+        /*
         //Clear
         gc.clearRect(0,0,width,height);
 
@@ -128,6 +128,18 @@ public class GameBlock extends Canvas {
         //Border
         gc.setStroke(Color.BLACK);
         gc.strokeRect(0,0,width,height);
+        */
+        gc.clearRect(0, 0, width, height);
+
+        // Draw rounded rectangle for empty tile
+        gc.setFill(Color.rgb(225, 225, 225,0.4)); // Light gray color
+        gc.fillRoundRect(2, 2, width - 4, height - 4, 8, 8); // Rounded rectangle with radius 8
+
+        // Draw border
+        gc.setStroke(Color.rgb(200, 200, 200)); // Slightly darker gray for border
+        gc.strokeRoundRect(2, 2, width - 4, height - 4, 8, 8);
+
+
     }
 
     /**
@@ -136,7 +148,7 @@ public class GameBlock extends Canvas {
      */
     private void paintColor(Paint colour) {
         var gc = getGraphicsContext2D();
-
+        /*
         //Clear
         gc.clearRect(0,0,width,height);
 
@@ -147,6 +159,18 @@ public class GameBlock extends Canvas {
         //Border
         gc.setStroke(Color.BLACK);
         gc.strokeRect(0,0,width,height);
+        */
+        // Clear
+        gc.clearRect(0, 0, width, height);
+
+        // Draw filled rounded rectangle
+        gc.setFill(colour);
+        gc.fillRoundRect(2, 2, width - 4, height - 4, 8, 8); // Rounded rectangle with radius 8
+
+        // Draw border
+        gc.setStroke(Color.rgb(150, 150, 150)); // Slightly darker gray for border
+        gc.strokeRoundRect(2, 2, width - 4, height - 4, 8, 8);
+
     }
 
     /**

@@ -57,7 +57,8 @@ public class ChallengeScene extends BaseScene {
         Grid grid = new Grid(3,3);
 
         var board = new GameBoard(game.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
-        PieceBoard pieceBoard= new PieceBoard(grid,gameWindow.getWidth()/5,gameWindow.getHeight()/5);
+        PieceBoard currentPieceBoard= new PieceBoard(grid,gameWindow.getWidth()/5,gameWindow.getHeight()/5);
+        PieceBoard nextPieceBoard= new PieceBoard(grid,gameWindow.getWidth()/5,gameWindow.getHeight()/5);
         mainPane.setCenter(board);
         VBox menuPane = new VBox();
 
@@ -69,25 +70,26 @@ public class ChallengeScene extends BaseScene {
         livesLabel.getStyleClass().add("lives");
         levelLabel.getStyleClass().add("level");
         multiplier.getStyleClass().add("level");
+        // Create a NextPieceListener inside ChallengeScene
+        game.setNextPieceListener(new NextPieceListener() {
+            @Override
+            public void nextPiece(GamePiece piece) {
+                // Call a method in PieceBoard to display the new piece
+                currentPieceBoard.settingPieceToDisplay(piece);
+            }
+        });
 
         scoreLabel.textProperty().bind(Bindings.concat("Score: ").concat(game.scoreProperty().asString()));
         livesLabel.textProperty().bind(Bindings.concat("Lives: ").concat(game.livesProperty().asString()));
         levelLabel.textProperty().bind(Bindings.concat("Level: ").concat(game.levelProperty().asString()));
         multiplier.textProperty().bind(Bindings.concat("Multiplier: ").concat(game.multiplierProperty().asString()));
 
-        menuPane.getChildren().addAll(scoreLabel, livesLabel, multiplier, levelLabel,pieceBoard);
+        menuPane.getChildren().addAll(scoreLabel, livesLabel, multiplier, levelLabel,currentPieceBoard,nextPieceBoard);
         mainPane.setRight(menuPane);
 
         multimedia = new Multimedia();
         multimedia.playMusic("game.wav");
-        // Create a NextPieceListener inside ChallengeScene
-        game.setNextPieceListener(new NextPieceListener() {
-            @Override
-            public void nextPiece(GamePiece piece) {
-                // Call a method in PieceBoard to display the new piece
-                pieceBoard.settingPieceToDisplay(piece);
-            }
-        });
+
 
 
 

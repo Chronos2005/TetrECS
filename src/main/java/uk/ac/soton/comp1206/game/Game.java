@@ -132,6 +132,10 @@ public class Game {
         nextPieceListener.nextPiece(curentPiece);
         return curentPiece;
      }
+
+    /**
+     * Handles everything that happens after
+     */
     public void afterPiece(){
         var linesCleared =0;
         int counterx =0;
@@ -157,8 +161,11 @@ public class Game {
                 clearRow(y);
                 linesCleared++;
             }
-            score(linesCleared,linesCleared*5);
+
         }
+        score(linesCleared,linesCleared*5);
+        level();
+        multiplier(linesCleared);
 
 
 
@@ -239,6 +246,19 @@ public class Game {
     }
 
     public void level(){
+        if(score.get()/1000>=1){
+            level.set( (int)Math.floor(score.get()/1000));
+        }
+
+    }
+
+    public void multiplier(int linesCleared){
+        if (linesCleared>0){
+            multiplier.set(multiplier.get()+linesCleared);
+        }
+        else {
+            multiplier.set(1);
+        }
 
     }
 }

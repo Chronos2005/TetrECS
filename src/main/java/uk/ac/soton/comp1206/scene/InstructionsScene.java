@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBoard;
 import uk.ac.soton.comp1206.component.PieceBoard;
+import uk.ac.soton.comp1206.game.GamePiece;
 import uk.ac.soton.comp1206.game.Grid;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
@@ -21,6 +22,7 @@ import java.util.Objects;
 
 public class InstructionsScene extends BaseScene {
     private static final Logger logger = LogManager.getLogger(InstructionsScene.class);
+    private GamePiece gamePiece;
     public InstructionsScene(GameWindow gameWindow) {
         super(gameWindow);
         logger.info("Creating Instructions Scene");
@@ -40,16 +42,22 @@ public class InstructionsScene extends BaseScene {
         instructionsPane.setMaxHeight(gameWindow.getHeight());
         instructionsPane.getStyleClass().add("menu-background");
         Grid grid = new Grid(3,3);
+        //creating the 15 pieces and
+        //Pieceboard 1
         PieceBoard pieceBoard1= new PieceBoard(grid,gameWindow.getWidth()/12,gameWindow.getHeight()/12);
+        pieceBoard1.settingPieceToDisplay(GamePiece.createPiece(0));
+        //PieceBoard2
         PieceBoard pieceBoard2= new PieceBoard(grid,gameWindow.getWidth()/12,gameWindow.getHeight()/12);
+        pieceBoard2.settingPieceToDisplay(GamePiece.createPiece(1));
         PieceBoard pieceBoard3= new PieceBoard(grid,gameWindow.getWidth()/12,gameWindow.getHeight()/12);
         PieceBoard pieceBoard4= new PieceBoard(grid,gameWindow.getWidth()/12,gameWindow.getHeight()/12);
 
+        //Adding Background image
         Image image = new Image(Objects.requireNonNull(InstructionsScene.class.getResource("/images/Instructions.png")).toExternalForm());
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(gameWindow.getHeight());
         imageView.setFitWidth(gameWindow.getWidth());
-        instructionsPane.getChildren().addAll(imageView,pieceBoard1);
+        instructionsPane.getChildren().addAll(imageView,pieceBoard1,pieceBoard2);
         root.getChildren().add(instructionsPane);
 
 
