@@ -85,6 +85,7 @@ public class Game {
 
     if (grid.canPlayPiece(curentPiece, x, y)) {
       grid.playPiece(curentPiece, x, y);
+      afterPiece();
       nextPiece();
     }
     }
@@ -131,6 +132,53 @@ public class Game {
         nextPieceListener.nextPiece(curentPiece);
         return curentPiece;
      }
+    public void afterPiece(){
+        var linesCleared =0;
+        int counterx =0;
+        for(var x=0; x<cols;x++){
+            for (var y =0 ; y<rows;y++){
+                if(grid.get(x,y)==0)break;
+                counterx++;
+            }
+            if (counterx ==rows){
+                clearColumn(x);
+                linesCleared++;
+            }
+
+        }
+
+        int countery = 0;
+        for(var y =0;y<rows;y++){
+            for(var x =0; x<cols;x++){
+                if(grid.get(x,y)==0)break;
+                countery++;
+            }
+            if(countery==cols){
+                clearRow(y);
+                linesCleared++;
+            }
+            score(linesCleared,linesCleared*5);
+        }
+
+
+
+
+
+    }
+
+    public void clearColumn(int x){
+        logger.info("Clearing a column");
+        for (var y=0;y<cols;y++){
+            grid.set(x,y,0);
+        }
+    }
+
+    public void clearRow(int y){
+        logger.info("Clearing a Row");
+        for (var x=0;x<rows;x++){
+            grid.set(x,y,0);
+        }
+    }
 
 
     public int getScore() {
@@ -185,7 +233,12 @@ public class Game {
         this.nextPieceListener= nextPieceListener;
     }
 
-    public void rotateCurrentPiece(GamePiece piece){
-        piece.rotate();
+    public void score(int lines , int blocks){
+        var score = lines*blocks*getMultiplier();
+        setScore(score);
+    }
+
+    public void level(){
+
     }
 }

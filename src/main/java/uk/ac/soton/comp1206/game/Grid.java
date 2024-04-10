@@ -148,52 +148,8 @@ public class Grid {
                 }
             }
         }
-        afterPiece();
-
-    }
-
-    public void afterPiece(){
-        int counterx =0;
-        for(var x=0; x<cols;x++){
-            for (var y =0 ; y<rows;y++){
-                if(get(x,y)==0)break;
-                counterx++;
-            }
-            if (counterx ==rows){
-                clearColumn(x);
-            }
-
-        }
-
-        int countery = 0;
-        for(var y =0;y<rows;y++){
-            for(var x =0; x<cols;x++){
-                if(get(x,y)==0)break;
-                countery++;
-            }
-            if(countery==cols){
-                clearRow(y);
-            }
-        }
 
 
-
-
-
-    }
-
-    public void clearColumn(int x){
-        logger.info("Clearing a column");
-        for (var y=0;y<cols;y++){
-            set(x,y,0);
-        }
-    }
-
-    public void clearRow(int y){
-        logger.info("Clearing a Row");
-        for (var x=0;x<rows;x++){
-            set(x,y,0);
-        }
     }
 
 }
