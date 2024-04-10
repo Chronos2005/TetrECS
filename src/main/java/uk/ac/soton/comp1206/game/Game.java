@@ -184,4 +184,8 @@ public class Game {
     public void setNextPieceListener(NextPieceListener nextPieceListener){
         this.nextPieceListener= nextPieceListener;
     }
+
+    public void rotateCurrentPiece(GamePiece piece){
+        piece.rotate();
+    }
 }

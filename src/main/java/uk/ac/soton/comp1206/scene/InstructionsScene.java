@@ -12,6 +12,8 @@ import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBoard;
+import uk.ac.soton.comp1206.component.PieceBoard;
+import uk.ac.soton.comp1206.game.Grid;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
@@ -37,11 +39,17 @@ public class InstructionsScene extends BaseScene {
         instructionsPane.setMaxWidth(gameWindow.getWidth());
         instructionsPane.setMaxHeight(gameWindow.getHeight());
         instructionsPane.getStyleClass().add("menu-background");
+        Grid grid = new Grid(3,3);
+        PieceBoard pieceBoard1= new PieceBoard(grid,gameWindow.getWidth()/12,gameWindow.getHeight()/12);
+        PieceBoard pieceBoard2= new PieceBoard(grid,gameWindow.getWidth()/12,gameWindow.getHeight()/12);
+        PieceBoard pieceBoard3= new PieceBoard(grid,gameWindow.getWidth()/12,gameWindow.getHeight()/12);
+        PieceBoard pieceBoard4= new PieceBoard(grid,gameWindow.getWidth()/12,gameWindow.getHeight()/12);
+
         Image image = new Image(Objects.requireNonNull(InstructionsScene.class.getResource("/images/Instructions.png")).toExternalForm());
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(gameWindow.getHeight());
         imageView.setFitWidth(gameWindow.getWidth());
-        instructionsPane.getChildren().add(imageView);
+        instructionsPane.getChildren().addAll(imageView,pieceBoard1);
         root.getChildren().add(instructionsPane);
 
 
