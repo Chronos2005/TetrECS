@@ -55,10 +55,11 @@ public class ChallengeScene extends BaseScene {
         var mainPane = new BorderPane();
         challengePane.getChildren().add(mainPane);
         Grid grid = new Grid(3,3);
+        Grid grid2 = new Grid(3,3);
 
         var board = new GameBoard(game.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
         PieceBoard currentPieceBoard= new PieceBoard(grid,gameWindow.getWidth()/5,gameWindow.getHeight()/5);
-        PieceBoard nextPieceBoard= new PieceBoard(grid,gameWindow.getWidth()/5,gameWindow.getHeight()/5);
+        PieceBoard followingPieceBoard= new PieceBoard(grid2,gameWindow.getWidth()/5,gameWindow.getHeight()/5);
         mainPane.setCenter(board);
         VBox menuPane = new VBox();
 
@@ -73,10 +74,12 @@ public class ChallengeScene extends BaseScene {
         // Create a NextPieceListener inside ChallengeScene
         game.setNextPieceListener(new NextPieceListener() {
             @Override
-            public void nextPiece(GamePiece piece) {
-                // Call a method in PieceBoard to display the new piece
-                currentPieceBoard.settingPieceToDisplay(piece);
+            public void nextPiece(GamePiece currentPiece, GamePiece nextPiece) {
+                currentPieceBoard.settingPieceToDisplay(currentPiece);
+                followingPieceBoard.settingPieceToDisplay(nextPiece);
+
             }
+
         });
 
         scoreLabel.textProperty().bind(Bindings.concat("Score: ").concat(game.scoreProperty().asString()));
@@ -84,7 +87,7 @@ public class ChallengeScene extends BaseScene {
         levelLabel.textProperty().bind(Bindings.concat("Level: ").concat(game.levelProperty().asString()));
         multiplier.textProperty().bind(Bindings.concat("Multiplier: ").concat(game.multiplierProperty().asString()));
 
-        menuPane.getChildren().addAll(scoreLabel, livesLabel, multiplier, levelLabel,currentPieceBoard,nextPieceBoard);
+        menuPane.getChildren().addAll(scoreLabel, livesLabel, multiplier, levelLabel,currentPieceBoard,followingPieceBoard);
         mainPane.setRight(menuPane);
 
         multimedia = new Multimedia();

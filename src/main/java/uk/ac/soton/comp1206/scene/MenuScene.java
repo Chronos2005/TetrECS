@@ -1,10 +1,16 @@
 package uk.ac.soton.comp1206.scene;
 
+import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.Multimedia;
@@ -41,6 +47,13 @@ public class MenuScene extends BaseScene {
         menuPane.setMaxWidth(gameWindow.getWidth());
         menuPane.setMaxHeight(gameWindow.getHeight());
         menuPane.getStyleClass().add("menu-background");
+
+        // Fade-in animation for the menu items
+        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), menuPane);
+        fadeTransition.setFromValue(0);
+        fadeTransition.setToValue(1);
+        fadeTransition.play();
+
         root.getChildren().add(menuPane);
 
         var mainPane = new BorderPane();
@@ -52,6 +65,15 @@ public class MenuScene extends BaseScene {
         mainPane.setTop(title);
         // Center align the title
         BorderPane.setAlignment(title, Pos.CENTER);
+        // TranslateTransition animation for the title
+        TranslateTransition titleTransition = new TranslateTransition(Duration.seconds(1), title);
+        titleTransition.setFromY(-50); // Start the title 50 pixels above its original position
+        titleTransition.setToY(0); // Move the title to its original position
+        titleTransition.setInterpolator(Interpolator.EASE_OUT); // Apply easing function
+        titleTransition.setCycleCount(Animation.INDEFINITE); // Loop indefinitely
+        titleTransition.setAutoReverse(true); // Reverse the animation
+
+        titleTransition.play(); // Start the animation
 
         //For now, let us just add a button that starts the game. I'm sure you'll do something way better.
         var singlePlayerButton = new Button("Single Player");
@@ -64,6 +86,17 @@ public class MenuScene extends BaseScene {
         multiPlayerButton.getStyleClass().add("menuItem");
         instructionsButton.getStyleClass().add("menuItem");
         extButton.getStyleClass().add("menuItem");
+
+        // Hover effects for buttons
+        singlePlayerButton.setOnMouseEntered(e -> singlePlayerButton.setEffect(new DropShadow()));
+        singlePlayerButton.setOnMouseExited(e -> singlePlayerButton.setEffect(null));
+        multiPlayerButton.setOnMouseEntered(e -> multiPlayerButton.setEffect(new DropShadow()));
+        multiPlayerButton.setOnMouseExited(e -> multiPlayerButton.setEffect(null));
+        instructionsButton.setOnMouseEntered(e -> instructionsButton.setEffect(new DropShadow()));
+        instructionsButton.setOnMouseExited(e -> instructionsButton.setEffect(null));
+        extButton.setOnMouseEntered(e -> extButton.setEffect(new DropShadow()));
+        extButton.setOnMouseExited(e -> extButton.setEffect(null));
+
         menu.getChildren().addAll(singlePlayerButton,multiPlayerButton,instructionsButton,extButton);
         menu.getStyleClass().add("menu");
 
@@ -96,7 +129,7 @@ public class MenuScene extends BaseScene {
 
     /**
      * Handle when the How to play button is pressed
-     * @param event
+     * @param event event
      */
     private void openInstructions(ActionEvent event){
         logger.info("Attempting to open the instructions page");

@@ -23,6 +23,7 @@ public class Game {
     private static final Logger logger = LogManager.getLogger(Game.class);
 
     private NextPieceListener nextPieceListener;
+    private GamePiece followingPiece;
 
     /**
      * Number of rows
@@ -39,7 +40,7 @@ public class Game {
      */
     protected final Grid grid;
 
-  private GamePiece curentPiece;
+    private GamePiece curentPiece;
 
     /**
      * Create a new game with the specified rows and columns. Creates a corresponding grid model.
@@ -70,7 +71,10 @@ public class Game {
      * Initialise a new game and set up anything that needs to be done at the start
      */
     public void initialiseGame() {
+
+        followingPiece=spawmPiece();
         nextPiece();
+
         logger.info("Initialising game");
     }
 
@@ -124,12 +128,20 @@ public class Game {
      }
 
      public GamePiece nextPiece(){
-        curentPiece = spawmPiece();
-        logger.info("The next piece is: {}", curentPiece);
-        if(nextPieceListener!=null){
-            nextPieceListener.nextPiece(curentPiece);
-        }
-        nextPieceListener.nextPiece(curentPiece);
+
+         curentPiece = followingPiece;
+         followingPiece = spawmPiece();
+         if(nextPieceListener!=null){
+             nextPieceListener.nextPiece(curentPiece,followingPiece);
+         }
+
+
+
+        logger.info("The current piece is: {}", curentPiece);
+        logger.info("The following piece is: {}", followingPiece);
+
+
+
         return curentPiece;
      }
 
@@ -260,5 +272,8 @@ public class Game {
             multiplier.set(1);
         }
 
+    }
+    public void rotateCurrentPiece(GamePiece piece){
+        piece.rotate();
     }
 }
