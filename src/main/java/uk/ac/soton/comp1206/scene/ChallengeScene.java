@@ -1,20 +1,29 @@
 package uk.ac.soton.comp1206.scene;
 
+import javafx.animation.*;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Timer;
 import uk.ac.soton.comp1206.Multimedia;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBoard;
 import uk.ac.soton.comp1206.component.PieceBoard;
+import uk.ac.soton.comp1206.event.GameLoopListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
 import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.game.GamePiece;
 import uk.ac.soton.comp1206.game.Grid;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
+
 
 /**
  * The Single Player challenge scene. Holds the UI for the single player challenge mode in the game.
@@ -24,6 +33,7 @@ public class ChallengeScene extends BaseScene {
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
     protected Game game;
     private Multimedia multimedia;
+    private ProgressBar progressBar;
 
     /**
      * Create a new Single Player challenge scene
@@ -89,6 +99,22 @@ public class ChallengeScene extends BaseScene {
 
         menuPane.getChildren().addAll(scoreLabel, livesLabel, multiplier, levelLabel,currentPieceBoard,followingPieceBoard);
         mainPane.setRight(menuPane);
+        ProgressBar timer = new ProgressBar(1.0);
+        mainPane.setBottom(timer);
+        startAnimation(game.getTimerDelay(),timer);
+
+
+
+
+        game.setOnGameLoop(new GameLoopListener() {
+            @Override
+            public void onGameLoop() {
+                startAnimation(game.getTimerDelay(),timer);
+
+            }
+        });
+
+
 
         multimedia = new Multimedia();
         multimedia.playMusic("game.wav");
@@ -99,6 +125,10 @@ public class ChallengeScene extends BaseScene {
         //Handle block on gameboard grid being clicked
         board.setOnBlockClick(this::blockClicked);
         gameWindow.getScene().setOnKeyPressed((event)->{});
+        gameWindow.getScene().setOnKeyPressed((event)->{if (event.getCode() == KeyCode.SPACE){
+        game.swapCurrentPiece();}
+        });
+
     }
 
     /**
@@ -126,6 +156,44 @@ public class ChallengeScene extends BaseScene {
     public void initialise() {
         logger.info("Initialising Challenge");
         game.start();
+    }
+
+    public void startAnimation(int time, ProgressBar timeBar){
+        logger.info("Starting timer animation");
+        final double MAX_PROGRESS = 1.0;
+        final Duration ANIMATION_DURATION = Duration.millis(time);
+
+
+        // Set the preferred width of the progress bar
+        timeBar.setPrefWidth(gameWindow.getWidth());
+        // Initially set the progress bar style to green
+        timeBar.setStyle("-fx-accent: green;");
+
+        Timeline timeline = new Timeline();
+
+        // Decrease progress from max to 0
+        KeyFrame decreaseFrame = new KeyFrame(Duration.ZERO, new KeyValue(timeBar.progressProperty(), MAX_PROGRESS));
+        KeyFrame zeroFrame = new KeyFrame(ANIMATION_DURATION, new KeyValue(timeBar.progressProperty(), 0));
+
+        // Add the keyframes to the timeline
+        timeline.getKeyFrames().addAll(decreaseFrame, zeroFrame);
+
+        // Add listener to change color when progress is below threshold
+        timeBar.progressProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.doubleValue() < 0.4) {
+                timeBar.setStyle("-fx-accent: red;");
+            } else {
+                timeBar.setStyle("-fx-accent: green;");
+            }
+        });
+
+        // Start the animation
+        timeline.play();
+
+
+
+
+
     }
 
 }

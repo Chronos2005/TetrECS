@@ -1,13 +1,18 @@
 package uk.ac.soton.comp1206.game;
 
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
+import uk.ac.soton.comp1206.event.GameLoopListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
 
+import javax.security.auth.callback.TextInputCallback;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * The Game class handles the main logic, state and properties of the TetrECS game. Methods to manipulate the game state
@@ -24,6 +29,7 @@ public class Game {
 
     private NextPieceListener nextPieceListener;
     private GamePiece followingPiece;
+    private GameLoopListener gameLoopListener;
 
     /**
      * Number of rows
@@ -71,11 +77,13 @@ public class Game {
      * Initialise a new game and set up anything that needs to be done at the start
      */
     public void initialiseGame() {
-
+        logger.info("Initialising game");
         followingPiece=spawmPiece();
         nextPiece();
 
-        logger.info("Initialising game");
+        logger.info("starting the timer");
+        timer.scheduleAtFixedRate(task,0,getTimerDelay());
+
     }
 
   /**
@@ -178,6 +186,23 @@ public class Game {
         score(linesCleared,linesCleared*5);
         level();
         multiplier(linesCleared);
+        timer.cancel();
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                logger.info("gameloop is being called");
+                gameLoop();
+
+            }
+
+        };
+        timer.scheduleAtFixedRate(task,0,getTimerDelay());
+        // Notify the listener
+        if (gameLoopListener != null) {
+            gameLoopListener.onGameLoop();
+        }
+
 
 
 
@@ -273,7 +298,62 @@ public class Game {
         }
 
     }
+
+    /**
+     * Rotates the current piece
+     * @param piece current piece
+     */
     public void rotateCurrentPiece(GamePiece piece){
         piece.rotate();
     }
+
+    public void swapCurrentPiece(){
+        logger.info("The pieces are being swaped");
+        var tempPiece1 = curentPiece;
+        var tempPiece2 = followingPiece;
+        followingPiece = tempPiece1;
+        curentPiece = tempPiece2;
+    }
+
+    public int getTimerDelay() {
+        int MAX_DELAY = 12000;
+        int MIN_DELAY = 2500;
+        int DELAY_DECREMENT = 500;
+        int delay = MAX_DELAY - (level.get() * DELAY_DECREMENT);
+        return Math.max(delay, MIN_DELAY);
+    }
+
+    Timer timer = new Timer();
+    TimerTask task = new TimerTask() {
+        @Override
+        public void run() {
+            gameLoop();
+
+        }
+    };
+
+
+    private void gameLoop() {
+        Platform.runLater(()->{
+            setLives(getLives()-1);
+            logger.info("The current number of lives {} ",lives.get());
+            nextPiece();
+            setMultiplier(1);
+            // Notify the listener
+            if (gameLoopListener != null) {
+                gameLoopListener.onGameLoop();
+            }
+       });
+
+
+
+
+    }
+    public void setOnGameLoop(GameLoopListener listener) {
+        this.gameLoopListener = listener;
+    }
+
+
+
+
 }
