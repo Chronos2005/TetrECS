@@ -6,34 +6,32 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.util.Timer;
 import uk.ac.soton.comp1206.Multimedia;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBoard;
 import uk.ac.soton.comp1206.component.PieceBoard;
 import uk.ac.soton.comp1206.event.GameLoopListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
+import uk.ac.soton.comp1206.event.SwapPieceListener;
 import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.game.GamePiece;
 import uk.ac.soton.comp1206.game.Grid;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
-
 /**
  * The Single Player challenge scene. Holds the UI for the single player challenge mode in the game.
  */
 public class ChallengeScene extends BaseScene {
 
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(ChallengeScene.class);
     protected Game game;
     private Multimedia multimedia;
     private ProgressBar progressBar;
+
 
     /**
      * Create a new Single Player challenge scene
@@ -50,12 +48,11 @@ public class ChallengeScene extends BaseScene {
     @Override
     public void build() {
         logger.info("Building " + this.getClass().getName());
-
         setupGame();
-
+        //initilising the game pane
         root = new GamePane(gameWindow.getWidth(),gameWindow.getHeight());
 
-
+        //initialising the stack pane whcih contains
         var challengePane = new StackPane();
         challengePane.setMaxWidth(gameWindow.getWidth());
         challengePane.setMaxHeight(gameWindow.getHeight());
@@ -104,6 +101,13 @@ public class ChallengeScene extends BaseScene {
         startAnimation(game.getTimerDelay(),timer);
 
 
+        game.setSwapPieceListener((currentPiece, followingPiece) -> {
+            currentPieceBoard.settingPieceToDisplay(followingPiece);
+            followingPieceBoard.settingPieceToDisplay(currentPiece);
+
+        });
+
+
 
 
         game.setOnGameLoop(new GameLoopListener() {
@@ -112,7 +116,9 @@ public class ChallengeScene extends BaseScene {
                 startAnimation(game.getTimerDelay(),timer);
 
             }
+
         });
+
 
 
 
@@ -124,10 +130,8 @@ public class ChallengeScene extends BaseScene {
 
         //Handle block on gameboard grid being clicked
         board.setOnBlockClick(this::blockClicked);
-        gameWindow.getScene().setOnKeyPressed((event)->{});
-        gameWindow.getScene().setOnKeyPressed((event)->{if (event.getCode() == KeyCode.SPACE){
-        game.swapCurrentPiece();}
-        });
+
+
 
     }
 
@@ -155,6 +159,10 @@ public class ChallengeScene extends BaseScene {
     @Override
     public void initialise() {
         logger.info("Initialising Challenge");
+        scene.setOnKeyPressed((event)->{if (event.getCode() == KeyCode.SPACE|| event.getCode() == KeyCode.R){
+            logger.info("Space bar pressed");
+            game.swapCurrentPiece();}
+        });
         game.start();
     }
 

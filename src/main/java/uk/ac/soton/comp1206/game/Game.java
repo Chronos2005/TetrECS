@@ -1,5 +1,8 @@
 package uk.ac.soton.comp1206.game;
 
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -8,11 +11,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.event.GameLoopListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
-
-import javax.security.auth.callback.TextInputCallback;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import uk.ac.soton.comp1206.event.SwapPieceListener;
 
 /**
  * The Game class handles the main logic, state and properties of the TetrECS game. Methods to manipulate the game state
@@ -20,16 +19,17 @@ import java.util.TimerTask;
  */
 public class Game {
 
-    private IntegerProperty score;
-    private IntegerProperty level;
-    private IntegerProperty lives;
-    private IntegerProperty multiplier;
-    private Random random = new  Random();
+    private final IntegerProperty score;
+    private final IntegerProperty level;
+    private final IntegerProperty lives;
+    private final IntegerProperty multiplier;
+    private final Random random = new  Random();
     private static final Logger logger = LogManager.getLogger(Game.class);
 
     private NextPieceListener nextPieceListener;
     private GamePiece followingPiece;
     private GameLoopListener gameLoopListener;
+    private SwapPieceListener swapPieceListener;
 
     /**
      * Number of rows
@@ -48,6 +48,9 @@ public class Game {
 
     private GamePiece curentPiece;
 
+    private Timer timer;
+    private  TimerTask task;
+
     /**
      * Create a new game with the specified rows and columns. Creates a corresponding grid model.
      * @param cols number of columns
@@ -63,6 +66,14 @@ public class Game {
         level = new SimpleIntegerProperty(0);
         lives = new SimpleIntegerProperty(3);
         multiplier = new SimpleIntegerProperty(1);
+        timer = new Timer();
+        task = new TimerTask() {
+            @Override
+            public void run() {
+                gameLoop();
+
+            }
+        };
     }
 
     /**
@@ -82,7 +93,7 @@ public class Game {
         nextPiece();
 
         logger.info("starting the timer");
-        timer.scheduleAtFixedRate(task,0,getTimerDelay());
+        timer.schedule(task,getTimerDelay());
 
     }
 
@@ -135,7 +146,7 @@ public class Game {
 
      }
 
-     public GamePiece nextPiece(){
+     public void nextPiece(){
 
          curentPiece = followingPiece;
          followingPiece = spawmPiece();
@@ -149,8 +160,6 @@ public class Game {
         logger.info("The following piece is: {}", followingPiece);
 
 
-
-        return curentPiece;
      }
 
     /**
@@ -197,7 +206,7 @@ public class Game {
             }
 
         };
-        timer.scheduleAtFixedRate(task,0,getTimerDelay());
+        timer.schedule(task,getTimerDelay());
         // Notify the listener
         if (gameLoopListener != null) {
             gameLoopListener.onGameLoop();
@@ -257,7 +266,7 @@ public class Game {
         return lives;
     }
 
-    public void setLives(int lives) {
+    public synchronized void setLives(int lives) {
         this.lives.set(lives);
     }
 
@@ -284,7 +293,7 @@ public class Game {
 
     public void level(){
         if(score.get()/1000>=1){
-            level.set( (int)Math.floor(score.get()/1000));
+            level.set( (int)Math.floor((double) score.get() /1000));
         }
 
     }
@@ -309,10 +318,14 @@ public class Game {
 
     public void swapCurrentPiece(){
         logger.info("The pieces are being swaped");
+        if(swapPieceListener!=null){
+            swapPieceListener.swapPiece(curentPiece,followingPiece);
+        }
         var tempPiece1 = curentPiece;
         var tempPiece2 = followingPiece;
         followingPiece = tempPiece1;
         curentPiece = tempPiece2;
+
     }
 
     public int getTimerDelay() {
@@ -323,14 +336,7 @@ public class Game {
         return Math.max(delay, MIN_DELAY);
     }
 
-    Timer timer = new Timer();
-    TimerTask task = new TimerTask() {
-        @Override
-        public void run() {
-            gameLoop();
 
-        }
-    };
 
 
     private void gameLoop() {
@@ -343,7 +349,13 @@ public class Game {
             if (gameLoopListener != null) {
                 gameLoopListener.onGameLoop();
             }
-       });
+
+
+        });
+
+
+
+
 
 
 
@@ -351,6 +363,10 @@ public class Game {
     }
     public void setOnGameLoop(GameLoopListener listener) {
         this.gameLoopListener = listener;
+    }
+
+    public void setSwapPieceListener(SwapPieceListener listener){
+        this.swapPieceListener = listener;
     }
 
 
