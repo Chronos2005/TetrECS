@@ -1,15 +1,16 @@
 package uk.ac.soton.comp1206.game;
 
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
+import uk.ac.soton.comp1206.component.GameBlockCoordinate;
 import uk.ac.soton.comp1206.event.GameLoopListener;
+import uk.ac.soton.comp1206.event.LineClearedListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
 import uk.ac.soton.comp1206.event.SwapPieceListener;
 
@@ -31,6 +32,7 @@ public class Game {
   private GamePiece followingPiece;
   private GameLoopListener gameLoopListener;
   private SwapPieceListener swapPieceListener;
+  private  LineClearedListener lineClearedListener;
 
   /** Number of rows */
   protected final int rows;
@@ -45,6 +47,7 @@ public class Game {
 
   private Timer timer;
   private TimerTask task;
+  HashSet<GameBlockCoordinate> blocksToClear = new HashSet<>();
 
   /**
    * Create a new game with the specified rows and columns. Creates a corresponding grid model.
@@ -154,33 +157,26 @@ public class Game {
 
   /** Handles everything that happens after */
   public void afterPiece() {
-    var linesCleared = 0;
-    int counterx = 0;
-    for (var x = 0; x < cols; x++) {
-      for (var y = 0; y < rows; y++) {
-        if (grid.get(x, y) == 0) break;
-        counterx++;
-      }
-      if (counterx == rows) {
-        clearColumn(x);
-        linesCleared++;
-      }
-    }
+    logger.info("AfterPiece being called");
+    checkingVerticalLines();
+    checkingHorizontalLines();
 
-    int countery = 0;
-    for (var y = 0; y < rows; y++) {
-      for (var x = 0; x < cols; x++) {
-        if (grid.get(x, y) == 0) break;
-        countery++;
-      }
-      if (countery == cols) {
-        clearRow(y);
-        linesCleared++;
-      }
+
+
+    // Update score, level, etc. (your existing logic)
+
+    // Clear blocks
+    for (GameBlockCoordinate point : blocksToClear) {
+      grid.set(point.getX(), point.getY(), 0);
     }
-    score(linesCleared, linesCleared * 5);
+    blocksToClear.clear();
+
+
+
+
+    //score(linesCleared, linesCleared * 5);
     level();
-    multiplier(linesCleared);
+    //multiplier(linesCleared);
     timer.cancel();
     Timer timer = new Timer();
     TimerTask task =
@@ -198,19 +194,53 @@ public class Game {
     }
   }
 
-  public void clearColumn(int x) {
-    logger.info("Clearing a column");
-    for (var y = 0; y < cols; y++) {
-      grid.set(x, y, 0);
+  public void checkingVerticalLines(){
+    ArrayList<GameBlockCoordinate> myList = new ArrayList<>();
+    int linesToClear=0;
+    for(int x=0;x<cols;x++){
+      int blockCount=0;
+
+      for (int y=0;y<rows;y++){
+        if (grid.get(x,y)==0)break;
+        blockCount++;
+        myList.add(new GameBlockCoordinate(x,y));
+      }
+      if (blockCount==cols){
+        linesToClear++;
+        blocksToClear.addAll(myList);
+        myList.clear();
+
+      }
+      else {
+        myList.clear();
+      }
     }
+
   }
 
-  public void clearRow(int y) {
-    logger.info("Clearing a Row");
-    for (var x = 0; x < rows; x++) {
-      grid.set(x, y, 0);
+  public void checkingHorizontalLines(){
+    ArrayList<GameBlockCoordinate> myList = new ArrayList<>();
+    int linesToClear=0;
+    for (int y =0; y<rows;y++){
+      int blockCount=0;
+      for (int x=0;x<cols;x++){
+        if(grid.get(x,y)==0)break;
+        blockCount++;
+        myList.add(new GameBlockCoordinate(x,y));
+      }
+      if (blockCount==rows){
+        linesToClear++;
+        blocksToClear.addAll(myList);
+        myList.clear();
+
+      }
+      else {
+        myList.clear();
+      }
     }
+
   }
+
 
   public int getScore() {
     return score.get();
@@ -292,6 +322,9 @@ public class Game {
     piece.rotate();
   }
 
+  /**
+   * Swaps the current piece with the following piece
+   */
   public void swapCurrentPiece() {
     logger.info("The pieces are being swaped");
     if (swapPieceListener != null) {
@@ -302,6 +335,8 @@ public class Game {
     followingPiece = tempPiece1;
     curentPiece = tempPiece2;
   }
+
+
 
   public int getTimerDelay() {
     int MAX_DELAY = 12000;
@@ -339,5 +374,9 @@ public class Game {
 
   public GamePiece getFollowingPiece(){
       return followingPiece;
+  }
+
+  public void setOnLineCleared(LineClearedListener listener){
+    this.lineClearedListener=listener;
   }
 }

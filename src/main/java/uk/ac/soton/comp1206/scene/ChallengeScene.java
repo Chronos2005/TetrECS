@@ -14,7 +14,9 @@ import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBoard;
 import uk.ac.soton.comp1206.component.PieceBoard;
 import uk.ac.soton.comp1206.event.GameLoopListener;
+import uk.ac.soton.comp1206.event.LineClearedListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
+import uk.ac.soton.comp1206.event.SwapPieceListener;
 import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.game.GamePiece;
 import uk.ac.soton.comp1206.game.Grid;
@@ -109,6 +111,7 @@ public class ChallengeScene extends BaseScene {
     mainPane.setBottom(timer);
     startAnimation(game.getTimerDelay(), timer);
 
+
     game.setSwapPieceListener(
         (currentPiece, followingPiece) -> {
           currentPieceBoard.settingPieceToDisplay(followingPiece);
@@ -122,6 +125,13 @@ public class ChallengeScene extends BaseScene {
             startAnimation(game.getTimerDelay(), timer);
           }
         });
+    game.setOnLineCleared(new LineClearedListener() {
+      @Override
+      public void lineCleared(int x, int y) {
+        board.fadeOut(x,y);
+
+      }
+    });
 
     multimedia = new Multimedia();
     multimedia.playMusic("game.wav");

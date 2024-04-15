@@ -1,9 +1,11 @@
 package uk.ac.soton.comp1206.component;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,6 +46,7 @@ public class GameBlock extends Canvas {
     };
 
     private final GameBoard gameBoard;
+    private AnimationTimer fadeOutTimer;  // To handle the fade out animation
 
     private final double width;
     private final double height;
@@ -117,18 +120,6 @@ public class GameBlock extends Canvas {
      */
     private void paintEmpty() {
         var gc = getGraphicsContext2D();
-        /*
-        //Clear
-        gc.clearRect(0,0,width,height);
-
-        //Fill
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0,0, width, height);
-
-        //Border
-        gc.setStroke(Color.BLACK);
-        gc.strokeRect(0,0,width,height);
-        */
         gc.clearRect(0, 0, width, height);
 
         // Draw rounded rectangle for empty tile
@@ -148,18 +139,6 @@ public class GameBlock extends Canvas {
      */
     private void paintColor(Paint colour) {
         var gc = getGraphicsContext2D();
-        /*
-        //Clear
-        gc.clearRect(0,0,width,height);
-
-        //Colour fill
-        gc.setFill(colour);
-        gc.fillRect(0,0, width, height);
-
-        //Border
-        gc.setStroke(Color.BLACK);
-        gc.strokeRect(0,0,width,height);
-        */
         // Clear
         gc.clearRect(0, 0, width, height);
 
@@ -203,6 +182,33 @@ public class GameBlock extends Canvas {
      */
     public void bind(ObservableValue<? extends Number> input) {
         value.bind(input);
+    }
+
+    public void fadeOut() {
+        // Stop any existing fade out animation
+        if (fadeOutTimer != null) {
+            fadeOutTimer.stop();
+        }
+
+        // Initialize opacity for the fade effect
+        final double[] currentOpacity = {1.0};
+
+        fadeOutTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                currentOpacity[0] -= 0.05;  // Decrease opacity over time
+
+                if (currentOpacity[0] <= 0.0) {
+                    // Effect complete
+                    currentOpacity[0] = 0.0;
+                    fadeOutTimer.stop();
+
+                }
+
+
+            }
+        };
+        fadeOutTimer.start();
     }
 
 }

@@ -172,4 +172,8 @@ public class GameBoard extends GridPane {
         }
     }
 
+    public void fadeOut(int x,int y){
+        getBlock(x,y).fadeOut();
+    }
+
 }
