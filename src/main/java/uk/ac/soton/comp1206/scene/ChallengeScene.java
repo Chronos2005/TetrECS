@@ -133,6 +133,8 @@ public class ChallengeScene extends BaseScene {
       }
     });
 
+
+
     multimedia = new Multimedia();
     multimedia.playMusic("game.wav");
 
@@ -161,21 +163,20 @@ public class ChallengeScene extends BaseScene {
   @Override
   public void initialise() {
     logger.info("Initialising Challenge");
-    scene.setOnKeyPressed(
-        (event) -> {
-          if (event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.R) {
-            logger.info("Space bar pressed");
-            game.swapCurrentPiece();
-          }
-        });
-    scene.setOnKeyPressed(
-        keyEvent -> {
-          if (keyEvent.getCode() == KeyCode.E) {
-            game.rotateCurrentPiece(game.getCurrentPiece());
-            currentPieceBoard.settingPieceToDisplay(game.getCurrentPiece());
-          }
-        });
+
+
     game.start();
+    scene.setOnKeyPressed(keyEvent -> {
+      if (keyEvent.getCode() == KeyCode.E) {
+        logger.info("E button pressed");
+        game.rotateCurrentPiece(game.getCurrentPiece());
+        currentPieceBoard.settingPieceToDisplay(game.getCurrentPiece());
+      } else if (keyEvent.getCode() == KeyCode.SPACE) {
+        logger.info("Space bar pressed");
+        game.swapCurrentPiece();
+      }
+    });
+
   }
 
   public void startAnimation(int time, ProgressBar timeBar) {
