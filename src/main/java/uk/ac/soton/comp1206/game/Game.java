@@ -44,9 +44,10 @@ public class Game {
   protected final Grid grid;
 
   private GamePiece curentPiece;
+  private int linesToClear;
 
-  private Timer timer;
-  private TimerTask task;
+
+
   HashSet<GameBlockCoordinate> blocksToClear = new HashSet<>();
 
   /**
@@ -65,14 +66,7 @@ public class Game {
     level = new SimpleIntegerProperty(0);
     lives = new SimpleIntegerProperty(3);
     multiplier = new SimpleIntegerProperty(1);
-    timer = new Timer();
-    task =
-        new TimerTask() {
-          @Override
-          public void run() {
-            gameLoop();
-          }
-        };
+
   }
 
   /** Start the game */
@@ -88,7 +82,7 @@ public class Game {
     nextPiece();
 
     logger.info("starting the timer");
-    timer.schedule(task, getTimerDelay());
+
   }
 
   /**
@@ -158,45 +152,27 @@ public class Game {
   /** Handles everything that happens after */
   public void afterPiece() {
     logger.info("AfterPiece being called");
+    linesToClear=0;
     checkingVerticalLines();
     checkingHorizontalLines();
-
-
-
-    // Update score, level, etc. (your existing logic)
-
+    score(linesToClear,blocksToClear.size());
+    multiplier(linesToClear);
+    level();
     // Clear blocks
     for (GameBlockCoordinate point : blocksToClear) {
       grid.set(point.getX(), point.getY(), 0);
     }
     blocksToClear.clear();
 
-
-
-
-    //score(linesCleared, linesCleared * 5);
-    level();
-    //multiplier(linesCleared);
-    timer.cancel();
-    Timer timer = new Timer();
-    TimerTask task =
-        new TimerTask() {
-          @Override
-          public void run() {
-            logger.info("gameloop is being called");
-            gameLoop();
-          }
-        };
-    timer.schedule(task, getTimerDelay());
-    // Notify the listener
-    if (gameLoopListener != null) {
-      gameLoopListener.onGameLoop();
-    }
   }
 
+  /**
+   * Checks if any columns need to be
+   */
   public void checkingVerticalLines(){
+    logger.info("Checkig vertical line");
     ArrayList<GameBlockCoordinate> myList = new ArrayList<>();
-    int linesToClear=0;
+
     for(int x=0;x<cols;x++){
       int blockCount=0;
 
@@ -218,9 +194,12 @@ public class Game {
 
   }
 
+  /**
+   * Checks if any rows need to be cleared
+   */
   public void checkingHorizontalLines(){
+    logger.info("Checking Horizontal lines");
     ArrayList<GameBlockCoordinate> myList = new ArrayList<>();
-    int linesToClear=0;
     for (int y =0; y<rows;y++){
       int blockCount=0;
       for (int x=0;x<cols;x++){
@@ -295,8 +274,8 @@ public class Game {
   }
 
   public void score(int lines, int blocks) {
-    var score = lines * blocks * getMultiplier();
-    setScore(score);
+    var scoreIncrease = lines * blocks * getMultiplier()*10;
+    setScore(getScore()+scoreIncrease);
   }
 
   public void level() {
@@ -307,7 +286,7 @@ public class Game {
 
   public void multiplier(int linesCleared) {
     if (linesCleared > 0) {
-      multiplier.set(multiplier.get() + linesCleared);
+      multiplier.set(multiplier.get()+1);
     } else {
       multiplier.set(1);
     }
