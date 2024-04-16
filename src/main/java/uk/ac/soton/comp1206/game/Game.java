@@ -304,6 +304,7 @@ public class Game {
    * @param piece current piece
    */
   public void rotateCurrentPiece(GamePiece piece) {
+    media = new Multimedia();
     media.playAudio("/sounds/rotate.wav");
     piece.rotate();
   }
@@ -320,6 +321,7 @@ public class Game {
     var tempPiece2 = followingPiece;
     followingPiece = tempPiece1;
     curentPiece = tempPiece2;
+    media = new Multimedia();
     media.playAudio("/sounds/pling.wav");
   }
 

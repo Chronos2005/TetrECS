@@ -155,6 +155,7 @@ public class Grid {
         }
       }
     }
+    multimedia = new Multimedia();
     multimedia.playAudio("place.wav");
   }
 }

@@ -50,6 +50,7 @@ public class GameBlock extends Canvas {
 
     private final double width;
     private final double height;
+    private boolean isHovered = false;
 
     /**
      * The column this block exists as in the grid
@@ -90,6 +91,16 @@ public class GameBlock extends Canvas {
 
         //When the value property is updated, call the internal updateValue method
         value.addListener(this::updateValue);
+        // Add mouse enter and exit handlers
+        setOnMouseEntered(event -> {
+            isHovered = true;
+            paint(); // Repaint when mouse hovers over
+        });
+
+        setOnMouseExited(event -> {
+            isHovered = false;
+            paint(); // Repaint when mouse leaves
+        });
     }
 
     /**
@@ -106,13 +117,17 @@ public class GameBlock extends Canvas {
      * Handle painting of the block canvas
      */
     public void paint() {
-        //If the block is empty, paint as empty
-        if(value.get() == 0) {
-            paintEmpty();
+        if (isHovered&&value.get()==0) {
+            paintHovered();
         } else {
-            //If the block is not empty, paint with the colour represented by the value
-            paintColor(COLOURS[value.get()]);
+            // Call either paintEmpty or paintColor as before
+            if (value.get() == 0) {
+                paintEmpty();
+            } else {
+                paintColor(COLOURS[value.get()]);
+            }
         }
+
     }
 
     /**
@@ -203,6 +218,19 @@ public class GameBlock extends Canvas {
         };
 
         fadeOutTimer.start();
+    }
+
+    private void paintHovered() {
+        var gc = getGraphicsContext2D();
+        gc.clearRect(0, 0, width, height);
+
+        // ... Fill with regular block color ...
+        // ... Example: (Call paintEmpty or paintColor here) ...
+
+        // Draw a highlight border
+        gc.setStroke(Color.YELLOW);
+
+        gc.strokeRoundRect(2, 2, width - 4, height - 4, 8, 8);
     }
 
 
