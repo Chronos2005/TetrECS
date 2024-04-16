@@ -185,30 +185,30 @@ public class GameBlock extends Canvas {
     }
 
     public void fadeOut() {
-        // Stop any existing fade out animation
+        // Stop a fade-out animation in progress (if any)
         if (fadeOutTimer != null) {
             fadeOutTimer.stop();
         }
 
-        // Initialize opacity for the fade effect
-        final double[] currentOpacity = {1.0};
+        // Store original color
+        final Color originalColor = COLOURS[value.get()];
 
+        // Create a new AnimationTimer
         fadeOutTimer = new AnimationTimer() {
+
             @Override
-            public void handle(long now) {
-                currentOpacity[0] -= 0.05;  // Decrease opacity over time
-
-                if (currentOpacity[0] <= 0.0) {
-                    // Effect complete
-                    currentOpacity[0] = 0.0;
-                    fadeOutTimer.stop();
-
-                }
-
+            public void handle(long l) {
 
             }
         };
+
         fadeOutTimer.start();
     }
 
+
+
+
+
 }
+
+

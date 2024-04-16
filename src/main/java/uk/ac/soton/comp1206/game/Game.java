@@ -158,6 +158,10 @@ public class Game {
     score(linesToClear,blocksToClear.size());
     multiplier(linesToClear);
     level();
+
+    if(lineClearedListener!=null){
+      lineClearedListener.lineCleared(blocksToClear);
+    }
     // Clear blocks
     for (GameBlockCoordinate point : blocksToClear) {
       grid.set(point.getX(), point.getY(), 0);

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.Multimedia;
 import uk.ac.soton.comp1206.component.GameBlock;
+import uk.ac.soton.comp1206.component.GameBlockCoordinate;
 import uk.ac.soton.comp1206.component.GameBoard;
 import uk.ac.soton.comp1206.component.PieceBoard;
 import uk.ac.soton.comp1206.event.GameLoopListener;
@@ -22,6 +23,8 @@ import uk.ac.soton.comp1206.game.GamePiece;
 import uk.ac.soton.comp1206.game.Grid;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
+
+import java.util.Set;
 
 /**
  * The Single Player challenge scene. Holds the UI for the single player challenge mode in the game.
@@ -127,10 +130,13 @@ public class ChallengeScene extends BaseScene {
         });
     game.setOnLineCleared(new LineClearedListener() {
       @Override
-      public void lineCleared(int x, int y) {
-        board.fadeOut(x,y);
+      public void lineCleared(Set<GameBlockCoordinate> clearedCoordinates) {
+        board.fadeOut(clearedCoordinates);
 
       }
+
+
+
     });
 
 
