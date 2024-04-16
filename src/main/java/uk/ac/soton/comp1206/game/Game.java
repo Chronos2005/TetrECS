@@ -7,6 +7,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.soton.comp1206.Multimedia;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBlockCoordinate;
 import uk.ac.soton.comp1206.event.GameLoopListener;
@@ -33,6 +34,7 @@ public class Game {
   private GameLoopListener gameLoopListener;
   private SwapPieceListener swapPieceListener;
   private  LineClearedListener lineClearedListener;
+  private Multimedia media;
 
   /** Number of rows */
   protected final int rows;
@@ -302,6 +304,7 @@ public class Game {
    * @param piece current piece
    */
   public void rotateCurrentPiece(GamePiece piece) {
+    media.playAudio("/sounds/rotate.wav");
     piece.rotate();
   }
 
@@ -317,6 +320,7 @@ public class Game {
     var tempPiece2 = followingPiece;
     followingPiece = tempPiece1;
     curentPiece = tempPiece2;
+    media.playAudio("/sounds/pling.wav");
   }
 
 

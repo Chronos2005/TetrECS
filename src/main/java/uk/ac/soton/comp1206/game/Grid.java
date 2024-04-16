@@ -2,8 +2,10 @@ package uk.ac.soton.comp1206.game;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.media.Media;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.soton.comp1206.Multimedia;
 
 /**
  * The Grid is a model which holds the state of a game board. It is made up of a set of Integer
@@ -29,6 +31,7 @@ public class Grid {
 
   /** The grid is a 2D arrow with rows and columns of SimpleIntegerProperties. */
   private final SimpleIntegerProperty[][] grid;
+  private Multimedia multimedia;
 
   /**
    * Create a new Grid with the specified number of columns and rows and initialise them
@@ -152,5 +155,6 @@ public class Grid {
         }
       }
     }
+    multimedia.playAudio("place.wav");
   }
 }
