@@ -1,6 +1,9 @@
 package uk.ac.soton.comp1206.game;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
@@ -47,6 +50,9 @@ public class Game {
 
   private GamePiece curentPiece;
   private int linesToClear;
+  Timer timer = new Timer();
+  private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+  private Boolean piecePlayed =false;
 
 
 
@@ -82,6 +88,7 @@ public class Game {
     logger.info("Initialising game");
     followingPiece = spawmPiece();
     nextPiece();
+    scheduleGameLoop();
 
     logger.info("starting the timer");
 
@@ -160,6 +167,12 @@ public class Game {
     score(linesToClear,blocksToClear.size());
     multiplier(linesToClear);
     level();
+
+    piecePlayed=true;
+    scheduleGameLoop();
+    if (gameLoopListener != null) {
+      gameLoopListener.onGameLoop();
+    }
 
     if(lineClearedListener!=null){
       lineClearedListener.lineCleared(blocksToClear);
@@ -336,17 +349,23 @@ public class Game {
   }
 
   private void gameLoop() {
-    Platform.runLater(
-        () -> {
-          setLives(getLives() - 1);
-          logger.info("The current number of lives {} ", lives.get());
-          nextPiece();
-          setMultiplier(1);
-          // Notify the listener
-          if (gameLoopListener != null) {
-            gameLoopListener.onGameLoop();
-          }
-        });
+    Platform.runLater(()->{
+      if(piecePlayed==false){
+        setLives(getLives() - 1);
+        logger.info("The current number of lives {} ", lives.get());
+        nextPiece();
+        setMultiplier(1);
+        // Notify the listener
+        scheduleGameLoop();
+        if (gameLoopListener != null) {
+          gameLoopListener.onGameLoop();
+        }
+      }
+      piecePlayed=false;
+
+
+    });
+
   }
 
   public void setOnGameLoop(GameLoopListener listener) {
@@ -367,5 +386,9 @@ public class Game {
 
   public void setOnLineCleared(LineClearedListener listener){
     this.lineClearedListener=listener;
+  }
+
+  private void scheduleGameLoop() {
+    executorService.schedule(this::gameLoop, getTimerDelay(), TimeUnit.MILLISECONDS);
   }
 }
