@@ -3,6 +3,7 @@ package uk.ac.soton.comp1206.game;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
@@ -50,8 +51,8 @@ public class Game {
 
   private GamePiece curentPiece;
   private int linesToClear;
-  Timer timer = new Timer();
-  private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+  private Timer timer;
+  private  ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
   private Boolean piecePlayed =false;
 
 
@@ -88,7 +89,8 @@ public class Game {
     logger.info("Initialising game");
     followingPiece = spawmPiece();
     nextPiece();
-    scheduleGameLoop();
+    timer = new Timer();
+    startGameLoopTimer();
 
     logger.info("starting the timer");
 
@@ -168,8 +170,11 @@ public class Game {
     multiplier(linesToClear);
     level();
 
-    piecePlayed=true;
-    scheduleGameLoop();
+    executorService.shutdown();
+
+    timer.cancel();
+    timer = new Timer();
+    startGameLoopTimer();
     if (gameLoopListener != null) {
       gameLoopListener.onGameLoop();
     }
@@ -350,17 +355,16 @@ public class Game {
 
   private void gameLoop() {
     Platform.runLater(()->{
-      if(piecePlayed==false){
         setLives(getLives() - 1);
         logger.info("The current number of lives {} ", lives.get());
         nextPiece();
         setMultiplier(1);
         // Notify the listener
-        scheduleGameLoop();
+        startGameLoopTimer();
         if (gameLoopListener != null) {
           gameLoopListener.onGameLoop();
         }
-      }
+
 
 
     });
@@ -387,7 +391,14 @@ public class Game {
     this.lineClearedListener=listener;
   }
 
-  private void scheduleGameLoop() {
-    executorService.schedule(this::gameLoop, getTimerDelay(), TimeUnit.MILLISECONDS);
+  public void startGameLoopTimer(){
+    TimerTask task = new TimerTask() {
+      @Override
+      public void run() {
+        gameLoop();
+
+      }
+    };
+    timer.schedule(task,getTimerDelay());
   }
 }
