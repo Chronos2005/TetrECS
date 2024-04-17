@@ -126,6 +126,9 @@ public class ChallengeScene extends BaseScene {
           @Override
           public void onGameLoop() {
             startAnimation(game.getTimerDelay(), timer);
+            if(game.getLives()<0){
+              openScoreScene();
+            }
           }
         });
     game.setOnLineCleared(new LineClearedListener() {
@@ -164,6 +167,8 @@ public class ChallengeScene extends BaseScene {
     // Start new game
     game = new Game(5, 5);
   }
+
+
 
   /** Initialise the scene and start the game */
   @Override
@@ -220,5 +225,9 @@ public class ChallengeScene extends BaseScene {
 
     // Start the animation
     timeline.play();
+  }
+
+  public void openScoreScene(){
+    gameWindow.loadScene(new ScoresScene(gameWindow,game));
   }
 }

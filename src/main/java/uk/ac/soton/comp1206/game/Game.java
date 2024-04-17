@@ -158,7 +158,7 @@ public class Game {
     logger.info("The following piece is: {}", followingPiece);
   }
 
-  /** Handles everything that happens after */
+  /** Handles everything that happens after a piece gets placed */
   public void afterPiece() {
     logger.info("AfterPiece being called");
     linesToClear=0;
@@ -361,7 +361,6 @@ public class Game {
           gameLoopListener.onGameLoop();
         }
       }
-      piecePlayed=false;
 
 
     });
