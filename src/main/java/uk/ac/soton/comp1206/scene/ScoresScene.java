@@ -4,16 +4,20 @@ import javafx.beans.Observable;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.ScoresList;
+import uk.ac.soton.comp1206.event.CommunicationsListener;
 import uk.ac.soton.comp1206.game.Game;
+import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
@@ -70,12 +74,14 @@ public class ScoresScene extends BaseScene {
 }
 
  */
-public class ScoresScene extends BaseScene {
+public class ScoresScene extends BaseScene implements CommunicationsListener {
 
     private static final Logger logger = LogManager.getLogger(ScoresScene.class);
     private ScoresList scoresList;
+    private ScoresList remoteScoresList;
 
     private SimpleListProperty<Pair<String, Integer>> localScores;
+    private SimpleListProperty<Pair<String, Integer>> remoteScores;
 
     public ScoresScene(GameWindow gameWindow, Game game) {
         super(gameWindow);
@@ -85,42 +91,72 @@ public class ScoresScene extends BaseScene {
 
         ObservableList<Pair<String, Integer>> observableList = FXCollections.observableArrayList(scores);
         localScores = new SimpleListProperty<>(observableList);
-
+        remoteScores = new SimpleListProperty<>();
         loadScores();
+
+        loadOnlineScores();
         checkNewHighScore(game.getScore());
+
     }
 
     @Override
     public void initialise() {
 
+
     }
 
     @Override
     public void build() {
+
+
         logger.info("Building " + this.getClass().getName());
         root = new GamePane(gameWindow.getWidth(), gameWindow.getHeight());
         var scoresPane = new StackPane();
         scoresPane.getStyleClass().add("menu-background");
         root.getChildren().add(scoresPane);
 
+        // Create labels for local and remote scores
         Label localScoreLabel = new Label("Local Scores");
-        VBox vBox = new VBox();
-        BorderPane borderPane = new BorderPane();
-        vBox.getChildren().add(localScoreLabel);
+        Label remoteScoreLabel = new Label("Online Scores");
 
+        // Create VBox to hold the labels
+        VBox labelsBox = new VBox();
+        labelsBox.getChildren().addAll(localScoreLabel, remoteScoreLabel);
+        labelsBox.setSpacing(10);
+        labelsBox.setAlignment(Pos.CENTER);
 
-
-        scoresList = new ScoresList();
+        // Create ScoresList for local score
+        scoresList= new ScoresList();
         scoresList.scoresProperty().bindBidirectional(localScores);
-        vBox.setMaxWidth(gameWindow.getWidth()/2);
-        vBox.getChildren().add(scoresList);
 
-        borderPane.setCenter(vBox);
-        scoresPane.getChildren().add(borderPane);
-        scoresList.showAnimation();
+        // Create ScoresList for remote scores
+        remoteScoresList = new ScoresList();
+        remoteScoresList.scoresProperty().bindBidirectional(remoteScores);
 
+        // Create HBox to hold the local and remote scores side by side
+        HBox scoresBox = new HBox();
+        scoresBox.getChildren().addAll(scoresList, remoteScoresList);
+        scoresBox.setSpacing(20);
+        scoresBox.setAlignment(Pos.CENTER);
+
+        // Create VBox to hold the labels and scores
+        VBox mainBox = new VBox();
+        mainBox.getChildren().addAll(labelsBox, scoresBox);
+        mainBox.setSpacing(20);
+        mainBox.setAlignment(Pos.CENTER);
+
+        // Add the main VBox to the scores pane
+        scoresPane.getChildren().add(mainBox);
+
+        // Hide the scores initially
+        scoresList.hide();
+        remoteScoresList.hide();
+
+        // Reveal the scores with animation
         scoresList.reveal();
-
+        remoteScoresList.reveal();
+        scoresList.showAnimation();
+        remoteScoresList.showAnimation();
 
     }
 
@@ -196,5 +232,40 @@ public class ScoresScene extends BaseScene {
 
         Optional<String> result = dialog.showAndWait();
         return result.orElse("Anonymous");
+    }
+
+
+    private void loadOnlineScores(){
+        gameWindow.getCommunicator().send("HISCORES DEFAULT");
+    }
+
+    @Override
+    public void receiveCommunication(String communication) {
+        if (communication.startsWith("HISCORES")) {
+            String[] scores = communication.split("\\n");
+            remoteScores.clear();
+            for (int i = 1; i < scores.length; i++) {
+                String score = scores[i].trim();
+                if (!score.isEmpty()) {
+                    String[] data = score.split(":");
+                    if (data.length == 2) {
+                        String name = data[0];
+                        int scoreValue = Integer.parseInt(data[1]);
+                        remoteScores.add(new Pair<>(name, scoreValue));
+                    }
+                }
+            }
+            remoteScores.sort((p1, p2) -> p2.getValue().compareTo(p1.getValue()));
+        } else if (communication.startsWith("NEWSCORE")) {
+            String[] data = communication.split("\\s+")[1].split(":");
+            if (data.length == 2) {
+                String name = data[0];
+                int score = Integer.parseInt(data[1]);
+                remoteScores.add(new Pair<>(name, score));
+                remoteScores.sort((p1, p2) -> p2.getValue().compareTo(p1.getValue()));
+            }
+        }
+
+
     }
 }
