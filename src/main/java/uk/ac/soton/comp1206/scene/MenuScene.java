@@ -108,6 +108,7 @@ public class MenuScene extends BaseScene {
         //Bind the button action to the startGame method in the menu
         singlePlayerButton.setOnAction(this::startGame);
         instructionsButton.setOnAction(this::openInstructions);
+        multiPlayerButton.setOnAction(this::openLobby);
         extButton.setOnAction((event -> {gameWindow.closeGame();}));
     }
 
@@ -134,6 +135,11 @@ public class MenuScene extends BaseScene {
     private void openInstructions(ActionEvent event){
         logger.info("Attempting to open the instructions page");
         gameWindow.startInstruction();
+    }
+
+    private void openLobby(ActionEvent event){
+        logger.info("Attempting to open the multiplayer Lobby");
+        gameWindow.startMultiplayerLobby();
     }
 
 }

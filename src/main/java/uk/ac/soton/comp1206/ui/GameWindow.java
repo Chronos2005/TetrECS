@@ -180,6 +180,10 @@ public class GameWindow {
         stage.close();
     }
 
+    public void startMultiplayerLobby(){
+    loadScene(new LobbyScene(this));
+    }
+
 
 
 
