@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.scene;
 
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -74,7 +75,7 @@ public class ScoresScene extends BaseScene {
 }
 
  */
-public class ScoresScene extends BaseScene implements CommunicationsListener {
+public class ScoresScene extends BaseScene  {
 
     private static final Logger logger = LogManager.getLogger(ScoresScene.class);
     private ScoresList scoresList;
@@ -82,6 +83,7 @@ public class ScoresScene extends BaseScene implements CommunicationsListener {
 
     private SimpleListProperty<Pair<String, Integer>> localScores;
     private SimpleListProperty<Pair<String, Integer>> remoteScores;
+    private String recievedMessage;
 
     public ScoresScene(GameWindow gameWindow, Game game) {
         super(gameWindow);
@@ -90,17 +92,19 @@ public class ScoresScene extends BaseScene implements CommunicationsListener {
         ArrayList<Pair<String, Integer>> scores = new ArrayList<>();
 
         ObservableList<Pair<String, Integer>> observableList = FXCollections.observableArrayList(scores);
+        ObservableList<Pair<String, Integer>> remoteobservableList = FXCollections.observableArrayList(scores);
         localScores = new SimpleListProperty<>(observableList);
-        remoteScores = new SimpleListProperty<>();
+        remoteScores = new SimpleListProperty<>(remoteobservableList);
         loadScores();
 
-        loadOnlineScores();
+
         checkNewHighScore(game.getScore());
 
     }
 
     @Override
     public void initialise() {
+        logger.info("Initialising the Score screen");
 
 
     }
@@ -110,6 +114,7 @@ public class ScoresScene extends BaseScene implements CommunicationsListener {
 
 
         logger.info("Building " + this.getClass().getName());
+        logger.info("string message {}",recievedMessage);
         root = new GamePane(gameWindow.getWidth(), gameWindow.getHeight());
         var scoresPane = new StackPane();
         scoresPane.getStyleClass().add("menu-background");
@@ -132,6 +137,21 @@ public class ScoresScene extends BaseScene implements CommunicationsListener {
         // Create ScoresList for remote scores
         remoteScoresList = new ScoresList();
         remoteScoresList.scoresProperty().bindBidirectional(remoteScores);
+        gameWindow.getCommunicator().send("HISCORES DEFAULT");
+        writeOnlineScore("Ross",10);
+        gameWindow.getCommunicator().send(" HISCORE Ross:10");
+
+        gameWindow.getCommunicator().addListener(new CommunicationsListener() {
+
+            @Override
+            public void receiveCommunication(String communication) {
+                logger.info("Listener called");
+                loadOnlineScores(communication);
+
+
+            }
+        });
+
 
         // Create HBox to hold the local and remote scores side by side
         HBox scoresBox = new HBox();
@@ -235,37 +255,30 @@ public class ScoresScene extends BaseScene implements CommunicationsListener {
     }
 
 
-    private void loadOnlineScores(){
-        gameWindow.getCommunicator().send("HISCORES DEFAULT");
-    }
+    private void loadOnlineScores(String communication){
 
-    @Override
-    public void receiveCommunication(String communication) {
-        if (communication.startsWith("HISCORES")) {
-            String[] scores = communication.split("\\n");
+        Platform.runLater(()->
+        {String[] scores = communication.split("\n");
             remoteScores.clear();
-            for (int i = 1; i < scores.length; i++) {
-                String score = scores[i].trim();
-                if (!score.isEmpty()) {
-                    String[] data = score.split(":");
-                    if (data.length == 2) {
-                        String name = data[0];
-                        int scoreValue = Integer.parseInt(data[1]);
-                        remoteScores.add(new Pair<>(name, scoreValue));
-                    }
+            for (String line : scores) {
+                String[] parts = line.split(":");
+                if (parts.length == 2) {
+                    String name = parts[0];
+                    int score = Integer.parseInt(parts[1]);
+                    logger.info("name:{} score{}",name,score);
+                    remoteScores.add(new Pair<>(name, score));
                 }
             }
-            remoteScores.sort((p1, p2) -> p2.getValue().compareTo(p1.getValue()));
-        } else if (communication.startsWith("NEWSCORE")) {
-            String[] data = communication.split("\\s+")[1].split(":");
-            if (data.length == 2) {
-                String name = data[0];
-                int score = Integer.parseInt(data[1]);
-                remoteScores.add(new Pair<>(name, score));
-                remoteScores.sort((p1, p2) -> p2.getValue().compareTo(p1.getValue()));
-            }
-        }
 
+        });
 
     }
+
+    private void writeOnlineScore(String name, int score) {
+        logger.info("writeOnlineScore  method called");
+        String message = "HISCORE " + name + ":" + score;
+        gameWindow.getCommunicator().send(message);
+    }
+
+
 }
