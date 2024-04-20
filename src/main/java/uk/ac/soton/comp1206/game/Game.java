@@ -323,7 +323,7 @@ public class Game {
    */
   public void rotateCurrentPiece(GamePiece piece) {
     media = new Multimedia();
-    media.playAudio("/sounds/rotate.wav");
+    media.playAudio("rotate.wav");
     piece.rotate();
   }
 
@@ -340,7 +340,7 @@ public class Game {
     followingPiece = tempPiece1;
     curentPiece = tempPiece2;
     media = new Multimedia();
-    media.playAudio("/sounds/pling.wav");
+    media.playAudio("pling.wav");
   }
 
 
@@ -363,6 +363,9 @@ public class Game {
         startGameLoopTimer();
         if (gameLoopListener != null) {
           gameLoopListener.onGameLoop();
+        }
+        if (lives.get()<0){
+          timer.cancel();
         }
 
 

@@ -85,6 +85,11 @@ public class ScoresScene extends BaseScene  {
     private SimpleListProperty<Pair<String, Integer>> remoteScores;
     private String recievedMessage;
 
+    /**
+     * Create a new scene, passing in the GameWindow the scene will be displayed in
+     * @param game the game
+     * @param gameWindow the game window
+     */
     public ScoresScene(GameWindow gameWindow, Game game) {
         super(gameWindow);
         logger.info("Creating the scores scene");
@@ -101,6 +106,7 @@ public class ScoresScene extends BaseScene  {
         checkNewHighScore(game.getScore());
 
     }
+
 
     @Override
     public void initialise() {
@@ -139,7 +145,7 @@ public class ScoresScene extends BaseScene  {
         remoteScoresList.scoresProperty().bindBidirectional(remoteScores);
         gameWindow.getCommunicator().send("HISCORES DEFAULT");
         writeOnlineScore("Ross",10);
-        gameWindow.getCommunicator().send(" HISCORE Ross:10");
+
 
         gameWindow.getCommunicator().addListener(new CommunicationsListener() {
 
@@ -180,6 +186,9 @@ public class ScoresScene extends BaseScene  {
 
     }
 
+    /**
+     * Load the scores from the scores file
+     */
     private void loadScores() {
         try {
             File scoresFile = new File("scores.txt");
@@ -209,6 +218,9 @@ public class ScoresScene extends BaseScene  {
         }
     }
 
+    /**
+     * Write the scores to the scores file
+     */
     private void writeScores() {
         try {
             File scoresFile = new File("scores.txt");
@@ -244,6 +256,10 @@ public class ScoresScene extends BaseScene  {
         }
     }
 
+    /**
+     * Prompt the user for their name
+     * @return the name entered by the user
+     */
     private String promptForName() {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("New High Score");
@@ -255,6 +271,10 @@ public class ScoresScene extends BaseScene  {
     }
 
 
+    /**
+     * Load the online scores from the server
+     * @param communication the communication received
+     */
     private void loadOnlineScores(String communication){
 
         Platform.runLater(()->

@@ -113,8 +113,12 @@
 }
 
 .scorelist {
-    -fx-font-size: 20px;
-    -fx-font-family: 'Orbitron';
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-padding: 20px;
+    -fx-spacing: 10px;
+    -fx-border-color: #fff;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
 }
 
 .scoreitem {
