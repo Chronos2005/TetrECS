@@ -24,6 +24,12 @@ import uk.ac.soton.comp1206.game.Grid;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -32,9 +38,21 @@ import java.util.Set;
 public class ChallengeScene extends BaseScene {
 
   private static final Logger logger = LogManager.getLogger(ChallengeScene.class);
+  /**
+   * The game object
+   */
   protected Game game;
+  /**
+   * The multimedia object
+   */
   private Multimedia multimedia;
+  /**
+   * The timer progress bar to represent the time left
+   */
   private ProgressBar timer;
+  /**
+   * The current piece board
+   */
   private PieceBoard currentPieceBoard;
 
   /**
@@ -114,6 +132,11 @@ public class ChallengeScene extends BaseScene {
     mainPane.setBottom(timer);
     startAnimation(game.getTimerDelay(), timer);
 
+    Label highScoreLabel = new Label("High Score: " + getHighScore());
+    highScoreLabel.getStyleClass().add("heading");
+    mainPane.setTop(highScoreLabel);
+
+
 
     game.setSwapPieceListener(
         (currentPiece, followingPiece) -> {
@@ -190,6 +213,12 @@ public class ChallengeScene extends BaseScene {
 
   }
 
+  /**
+   * Start the timer animation
+   *
+   * @param time the time to animate
+   * @param timeBar the progress bar to animate
+   */
   public void startAnimation(int time, ProgressBar timeBar) {
     logger.info("Starting timer animation");
     final double MAX_PROGRESS = 1.0;
@@ -227,7 +256,30 @@ public class ChallengeScene extends BaseScene {
     timeline.play();
   }
 
+  /**
+   * Open the score scene
+   */
   public void openScoreScene(){
     gameWindow.loadScene(new ScoresScene(gameWindow,game));
   }
+
+  /**
+   * Get the high score from the scores.txt file
+   * @return the high score
+   */
+  public String getHighScore(){
+    String highscore = "n/a";
+    try {
+      BufferedReader reader = new BufferedReader(new FileReader("scores.txt"));
+      String firstLine = reader.readLine();
+      String parts[] = firstLine.split(":");
+      highscore= parts[1];
+
+      reader.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return highscore;
+  }
 }
+
