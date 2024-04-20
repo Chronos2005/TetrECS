@@ -44,6 +44,8 @@ public class LobbyScene extends BaseScene{
 
     private TextField messageToSend;
 
+    private HBox buttonBox = new HBox();
+
     /**
      * Create a new scene, passing in the GameWindow the scene will be displayed in
      *
@@ -98,6 +100,9 @@ public class LobbyScene extends BaseScene{
                     addCurrentChannels(communication);
                     joinChannel(communication);
                     receiveMessage(communication);
+                    startGame(communication);
+                    hostUI(communication);
+                    errorHandling(communication);
                 });
 
 
@@ -133,7 +138,10 @@ public class LobbyScene extends BaseScene{
     public void addCurrentChannels(String communication){
         if (communication.startsWith("CHANNELS")){
             channelBox.getChildren().clear();
-            if(communication.trim().substring(communication.indexOf(" ")+1).length()>0){
+            try{
+            logger.info("Current channels: "+communication);
+
+
                 communication = communication.trim().substring(communication.indexOf(" ")+1);
                 logger.info("Current channels: "+communication);
                 String[] channels = communication.split("\n");
@@ -143,6 +151,9 @@ public class LobbyScene extends BaseScene{
                     button.setOnAction(e -> joinChannel("JOIN "+channel));
                     channelBox.getChildren().add(button);
                 }
+
+            }catch (Exception e){
+                logger.error("Error: "+e.getMessage());
             }
 
         }
@@ -162,7 +173,6 @@ public class LobbyScene extends BaseScene{
         result.ifPresent(channelName -> {
             // Send the channel name to the server
             gameWindow.getCommunicator().send("CREATE " + channelName);
-            HBox.setHgrow(messageToSend, Priority.ALWAYS);
         });
 
     }
@@ -186,26 +196,7 @@ public class LobbyScene extends BaseScene{
      * @param channelName the name of the channel
      */
     private BorderPane createChannelUI(String channelName){
-        /*
-        Label channelLabel = new Label(channelName);
-        Label welcomeMessage = new Label("Welcome to the Lobby");
-        Label nickNameLabel = new Label("Type /nick NewNAme to change your name");
-        channelLabel.getStyleClass().add("title"); // Add a style class to the label
-        VBox vBox = new VBox();
 
-
-        // Create the HBox for the bottom region
-        HBox hBox = new HBox();
-        //Text field is the message which get sent
-        messageToSend = new TextField();
-        Button button = new Button("Send");
-        hBox.getChildren().addAll(messageToSend, button);
-        channelBox.getChildren().addAll(channelLabel, hBox);
-
-        return channelBox;
-
-         */
-        //Setup scene with a border pane
         var pane = new BorderPane();
 
         scrollPane = new ScrollPane();
@@ -225,27 +216,28 @@ public class LobbyScene extends BaseScene{
         Button button = new Button("Send");
         button.setOnAction((event)-> sendCurrentMessage(messageToSend.getText()));
         hBox.getChildren().addAll(messageToSend, button);
-        pane.setBottom(hBox);
+
         messageToSend.setOnKeyPressed((event) -> {
             if (event.getCode() != KeyCode.ENTER) return;
             sendCurrentMessage(messageToSend.getText());
         });
 
 
-        //TODO: Set up the GUI to be more useful than this...
+
         pane.setCenter(scrollPane);
         HBox.setHgrow(messageToSend,Priority.ALWAYS);
         // Create the buttons
-        Button startGameButton = new Button("Start Game");
+
         Button leaveChannelButton = new Button("Leave Channel");
 
-// Add action listeners
-        startGameButton.setOnAction(e -> gameWindow.getCommunicator().send("START"));
+        // Add action listeners
         leaveChannelButton.setOnAction(e -> gameWindow.getCommunicator().send("PART"));
 
-// Add the buttons to the UI
-        HBox buttonBox = new HBox(startGameButton, leaveChannelButton);
-        pane.setBottom(buttonBox);
+        // Add the buttons to the UI
+         buttonBox = new HBox(leaveChannelButton);
+        VBox buttonVBox = new VBox();
+        buttonVBox.getChildren().addAll(hBox,buttonBox);
+        pane.setBottom(buttonVBox);
         return pane;
 
 
@@ -278,5 +270,32 @@ public class LobbyScene extends BaseScene{
             }
         }
 
+    }
+
+    public void startGame(String communication){
+        if(communication.startsWith("START")){
+            gameWindow.startMultiplayerGame();
+        }
+    }
+
+    public void  hostUI(String communication){
+        if (communication.startsWith("HOST")){
+            Button startGameButton = new Button("Start Game");
+            startGameButton.setOnAction(e -> gameWindow.getCommunicator().send("START"));
+            buttonBox.getChildren().add(startGameButton);
+        }
+    }
+
+    public void errorHandling(String communication){
+        if (communication.startsWith("ERROR")){
+            logger.info("Error: "+communication);
+            var message = communication.trim().substring(communication.indexOf(" ")+1);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error ");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+
+            alert.showAndWait();
+        }
     }
 }

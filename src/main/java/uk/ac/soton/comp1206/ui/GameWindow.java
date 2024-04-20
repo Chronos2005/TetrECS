@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.App;
+import uk.ac.soton.comp1206.game.MultiplayerGame;
 import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.scene.*;
 
@@ -180,8 +181,18 @@ public class GameWindow {
         stage.close();
     }
 
+    /**
+     * Opens the multiplayer lobby
+     */
     public void startMultiplayerLobby(){
     loadScene(new LobbyScene(this));
+    }
+
+    /**
+     * Opens a multiplayer game
+     */
+    public void startMultiplayerGame(){
+    loadScene(new MultiplayerScene(this));
     }
 
 

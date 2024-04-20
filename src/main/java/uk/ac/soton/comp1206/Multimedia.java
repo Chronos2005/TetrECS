@@ -41,7 +41,7 @@ public class Multimedia {
      */
   public void playMusic(String filename){
         try {
-            logger.info("Trying to play Music");
+            logger.info("Trying to play Music"+ filename);
             var toPlay = Multimedia.class.getResource("/music/" + filename).toExternalForm();
             media = new Media(toPlay);
             musicPlayer = new MediaPlayer(media);
