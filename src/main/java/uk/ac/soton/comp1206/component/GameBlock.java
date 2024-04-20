@@ -66,6 +66,8 @@ public class GameBlock extends Canvas {
      * The value of this block (0 = empty, otherwise specifies the colour to render as)
      */
     private final IntegerProperty value = new SimpleIntegerProperty(0);
+    private static final int FADE_DURATION_MILLIS = 500; // Duration of the fade-out animation in milliseconds
+    private static final int FADE_STEPS = 20; // Number of steps in the animation
 
     /**
      * Create a new single Game Block
@@ -200,25 +202,47 @@ public class GameBlock extends Canvas {
     }
 
     public void fadeOut() {
-        // Stop a fade-out animation in progress (if any)
-        if (fadeOutTimer != null) {
-            fadeOutTimer.stop();
-        }
-
-        // Store original color
-        final Color originalColor = COLOURS[value.get()];
-
-        // Create a new AnimationTimer
-        fadeOutTimer = new AnimationTimer() {
-
-            @Override
-            public void handle(long l) {
-
-            }
-        };
-
-        fadeOutTimer.start();
+    // Stop a fade-out animation in progress (if any)
+    if (fadeOutTimer != null) {
+        fadeOutTimer.stop();
     }
+
+    // Store original color
+    final Color originalColor = Color.rgb(225, 225, 225,0.4);
+
+    // Create a new AnimationTimer
+    fadeOutTimer = new AnimationTimer() {
+        private long startTime = System.currentTimeMillis();
+        private double opacity = 1.0;
+
+        @Override
+        public void handle(long currentNanoTime) {
+            double elapsedMillis = System.currentTimeMillis() - startTime;
+            double progress = Math.min(elapsedMillis / FADE_DURATION_MILLIS, 1.0);
+
+            // Update opacity based on progress
+            opacity = 1.0 - progress;
+
+            // Paint with updated opacity
+            if (opacity > 0.5) {
+                // For the first half of the animation, show green color
+                paintColor(Color.rgb(0, 255, 0, opacity));
+            } else {
+                // For the second half of the animation, fade out to the original color
+                paintColor(new Color(originalColor.getRed(), originalColor.getGreen(), originalColor.getBlue(), opacity * 2));
+            }
+
+            // Stop the animation when it completes
+            if (progress >= 1.0) {
+                stop();
+                fadeOutTimer = null;
+                paintEmpty(); // Paint the block as empty after the animation is complete
+            }
+        }
+    };
+
+    fadeOutTimer.start();
+}
 
     private void paintHovered() {
         var gc = getGraphicsContext2D();
