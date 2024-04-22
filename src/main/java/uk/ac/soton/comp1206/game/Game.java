@@ -26,6 +26,7 @@ import uk.ac.soton.comp1206.event.SwapPieceListener;
  */
 public class Game {
 
+
   private final IntegerProperty score;
   private final IntegerProperty level;
   private final IntegerProperty lives;

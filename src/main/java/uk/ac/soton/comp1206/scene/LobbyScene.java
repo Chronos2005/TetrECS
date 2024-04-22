@@ -75,8 +75,8 @@ public class LobbyScene extends BaseScene{
         root = new GamePane(gameWindow.getWidth(), gameWindow.getHeight());
         StackPane lobbyPane = new StackPane();
         lobbyPane.getStyleClass().add("menu-background");
-        Label multiplayerLabel = new Label("Multiplayer");
-        Label currentGamesLabel = new Label("Current Games");
+        Text multiplayerLabel = new Text("Multiplayer");
+        Text currentGamesLabel = new Text("Current Games");
         Button hostGamesLabel = new Button("Host new Game");
         multiplayerLabel.getStyleClass().add("bigtitle");
         currentGamesLabel.getStyleClass().add("title");
@@ -213,6 +213,8 @@ public class LobbyScene extends BaseScene{
         HBox hBox = new HBox();
         //Text field is the message which get sent
         messageToSend = new TextField();
+        messageToSend.setPromptText("Type your message here");
+        messageToSend.getStyleClass().add("TextField");
         Button button = new Button("Send");
         button.setOnAction((event)-> sendCurrentMessage(messageToSend.getText()));
         hBox.getChildren().addAll(messageToSend, button);

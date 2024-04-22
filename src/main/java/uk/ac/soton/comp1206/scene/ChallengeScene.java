@@ -2,10 +2,12 @@ package uk.ac.soton.comp1206.scene;
 
 import javafx.animation.*;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -77,7 +79,7 @@ public class ChallengeScene extends BaseScene {
     var challengePane = new StackPane();
     challengePane.setMaxWidth(gameWindow.getWidth());
     challengePane.setMaxHeight(gameWindow.getHeight());
-    challengePane.getStyleClass().add("menu-background");
+    challengePane.getStyleClass().add("challenge-background");
     root.getChildren().add(challengePane);
 
     var mainPane = new BorderPane();
@@ -92,10 +94,12 @@ public class ChallengeScene extends BaseScene {
     mainPane.setCenter(board);
     VBox menuPane = new VBox();
 
-    Label scoreLabel = new Label();
-    Label livesLabel = new Label();
-    Label multiplier = new Label();
-    Label levelLabel = new Label();
+    Text scoreLabel = new Text();
+    Text livesLabel = new Text();
+    Text multiplier = new Text();
+    Text levelLabel = new Text();
+    Text Title = new Text("Challenge mode");
+    Title.getStyleClass().add("title");
     scoreLabel.getStyleClass().add("score");
     livesLabel.getStyleClass().add("lives");
     levelLabel.getStyleClass().add("level");
@@ -132,9 +136,11 @@ public class ChallengeScene extends BaseScene {
     mainPane.setBottom(timer);
     startAnimation(game.getTimerDelay(), timer);
 
-    Label highScoreLabel = new Label("High Score: " + getHighScore());
+    Text highScoreLabel = new Text("High Score: " + getHighScore());
     highScoreLabel.getStyleClass().add("heading");
-    mainPane.setTop(highScoreLabel);
+    mainPane.setLeft(highScoreLabel);
+    mainPane.setTop(Title);
+    BorderPane.setAlignment(Title, Pos.TOP_CENTER);
 
 
 
