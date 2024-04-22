@@ -126,6 +126,7 @@ public class MenuScene extends BaseScene {
      */
     private void startGame(ActionEvent event) {
         gameWindow.startChallenge();
+        multimedia.stopMusic();
     }
 
     /**

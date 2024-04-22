@@ -56,6 +56,12 @@ public class Multimedia {
         }
     }
 
+    public void stopMusic() {
+    if (musicPlayer != null) {
+        musicPlayer.stop();
+    }
+}
+
 
 
 }
