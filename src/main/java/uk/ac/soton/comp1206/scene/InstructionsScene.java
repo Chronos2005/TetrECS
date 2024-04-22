@@ -40,7 +40,7 @@ public class InstructionsScene extends BaseScene {
 
     instructionsPane.setMaxWidth(gameWindow.getWidth());
     instructionsPane.setMaxHeight(gameWindow.getHeight());
-    instructionsPane.getStyleClass().add("menu-background");
+    instructionsPane.getStyleClass().add("instructions-background");
 
     // Adding Background image
     Image image =

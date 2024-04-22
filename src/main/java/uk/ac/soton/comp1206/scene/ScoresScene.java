@@ -123,7 +123,7 @@ public class ScoresScene extends BaseScene  {
         logger.info("string message {}",recievedMessage);
         root = new GamePane(gameWindow.getWidth(), gameWindow.getHeight());
         var scoresPane = new StackPane();
-        scoresPane.getStyleClass().add("menu-background");
+        scoresPane.getStyleClass().add("scores-background");
         root.getChildren().add(scoresPane);
 
         // Create labels for local and remote scores

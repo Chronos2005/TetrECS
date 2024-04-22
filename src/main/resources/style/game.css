@@ -16,6 +16,27 @@
     -fx-background-size: cover;
 }
 
+.instructions-background {
+    -fx-background-image: url("../images/3.jpg");
+    -fx-background-size: cover;
+}
+
+.lobby-background{
+    -fx-background-image: url("../images/4.jpg");
+    -fx-background-size: cover;
+
+}
+
+.scores-background{
+    -fx-background-image: url("../images/5.jpg");
+    -fx-background-size: cover;
+}
+
+.multiplayer-background{
+    -fx-background-image: url("../images/6.jpg");
+    -fx-background-size: cover;
+}
+
 .menu {
     -fx-padding: 10;
 }

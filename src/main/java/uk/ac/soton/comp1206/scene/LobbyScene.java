@@ -74,7 +74,7 @@ public class LobbyScene extends BaseScene{
         requestingChannelsTimer();
         root = new GamePane(gameWindow.getWidth(), gameWindow.getHeight());
         StackPane lobbyPane = new StackPane();
-        lobbyPane.getStyleClass().add("menu-background");
+        lobbyPane.getStyleClass().add("lobby-background");
         Text multiplayerLabel = new Text("Multiplayer");
         Text currentGamesLabel = new Text("Current Games");
         Button hostGamesLabel = new Button("Host new Game");
