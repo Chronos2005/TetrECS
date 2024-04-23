@@ -12,6 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -117,36 +118,37 @@ public class ScoresScene extends BaseScene  {
 
     @Override
     public void build() {
-
-
         logger.info("Building " + this.getClass().getName());
-        logger.info("string message {}",recievedMessage);
         root = new GamePane(gameWindow.getWidth(), gameWindow.getHeight());
-        var scoresPane = new StackPane();
+        BorderPane scoresPane = new BorderPane();
         scoresPane.getStyleClass().add("scores-background");
-        root.getChildren().add(scoresPane);
-
-        // Create labels for local and remote scores
-        Label localScoreLabel = new Label("Local Scores");
-        Label remoteScoreLabel = new Label("Online Scores");
-
-        // Create VBox to hold the labels
-        VBox labelsBox = new VBox();
-        labelsBox.getChildren().addAll(localScoreLabel, remoteScoreLabel);
-        labelsBox.setSpacing(10);
-        labelsBox.setAlignment(Pos.CENTER);
+        Text Title = new Text("High Scores");
+        Title.getStyleClass().add("title");
+        scoresPane.setTop(Title);
+        BorderPane.setAlignment(Title, Pos.TOP_CENTER);
+        VBox localScoresBox = new VBox();
+        Text localScoreLabel = new Text("Local Scores");
+        localScoreLabel.getStyleClass().add("scores-label");
 
         // Create ScoresList for local score
         scoresList= new ScoresList();
         scoresList.scoresProperty().bindBidirectional(localScores);
 
+        localScoresBox.getChildren().addAll(localScoreLabel, scoresList);
         // Create ScoresList for remote scores
         remoteScoresList = new ScoresList();
         remoteScoresList.scoresProperty().bindBidirectional(remoteScores);
+        VBox remoteScoresBox = new VBox();
+        Text remoteScoreLabel = new Text("Online Scores");
+        remoteScoreLabel.getStyleClass().add("scores-label");
+        remoteScoresBox.getChildren().addAll(remoteScoreLabel, remoteScoresList);
+        HBox scoresBox = new HBox();
+        scoresBox.getChildren().addAll(localScoresBox, remoteScoresBox);
+        scoresBox.setSpacing(20);
+        scoresBox.setAlignment(Pos.CENTER);
+        scoresPane.setCenter(scoresBox);
+        root.getChildren().add(scoresPane);
         gameWindow.getCommunicator().send("HISCORES DEFAULT");
-        writeOnlineScore("Ross",10);
-
-
         gameWindow.getCommunicator().addListener(new CommunicationsListener() {
 
             @Override
@@ -157,32 +159,12 @@ public class ScoresScene extends BaseScene  {
 
             }
         });
-
-
-        // Create HBox to hold the local and remote scores side by side
-        HBox scoresBox = new HBox();
-        scoresBox.getChildren().addAll(scoresList, remoteScoresList);
-        scoresBox.setSpacing(20);
-        scoresBox.setAlignment(Pos.CENTER);
-
-        // Create VBox to hold the labels and scores
-        VBox mainBox = new VBox();
-        mainBox.getChildren().addAll(labelsBox, scoresBox);
-        mainBox.setSpacing(20);
-        mainBox.setAlignment(Pos.CENTER);
-
-        // Add the main VBox to the scores pane
-        scoresPane.getChildren().add(mainBox);
-
-        // Hide the scores initially
-        scoresList.hide();
-        remoteScoresList.hide();
-
-        // Reveal the scores with animation
         scoresList.reveal();
-        remoteScoresList.reveal();
-        scoresList.showAnimation();
-        remoteScoresList.showAnimation();
+
+
+
+
+
 
     }
 
@@ -289,6 +271,7 @@ public class ScoresScene extends BaseScene  {
                     remoteScores.add(new Pair<>(name, score));
                 }
             }
+            remoteScoresList.reveal();
 
         });
 

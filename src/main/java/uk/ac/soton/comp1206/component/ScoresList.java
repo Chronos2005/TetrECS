@@ -1,6 +1,6 @@
 package uk.ac.soton.comp1206.component;
 
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -47,33 +48,25 @@ public class ScoresList extends VBox {
   private void updateScores(ObservableList<Pair<String, Integer>> scoreList) {
     getChildren().clear();
     for (Pair<String, Integer> score : scoreList) {
-      Label scoreLabel = new Label(score.getKey() + ": " + score.getValue());
-      getChildren().add(scoreLabel);
+      Text scoreLabel = new Text(score.getKey() + ": " + score.getValue());
+        scoreLabel.setTextAlignment(TextAlignment.CENTER);
+        scoreLabel.getStyleClass().add("Hiscore");
+        getChildren().add(scoreLabel);
     }
   }
 
   public void reveal() {
-    TranslateTransition transition = new TranslateTransition(Duration.millis(500), this);
-    transition.setFromY(-getHeight());
-    transition.setToY(0);
-    transition.play();
-  }
+    double delay = 0.0;
 
-  public void hide() {
-    TranslateTransition transition = new TranslateTransition(Duration.millis(500), this);
-    transition.setFromY(0);
-    transition.setToY(-getHeight());
-    transition.play();
-  }
-
-  public void showAnimation(Node... nodes) {
-    for (Node node : nodes) {
-      node.setOpacity(0);
-      TranslateTransition transition = new TranslateTransition(Duration.millis(500), node);
-      transition.setFromY(-node.getLayoutY());
-      transition.setToY(0);
-      transition.setOnFinished(event -> node.setOpacity(1));
-      transition.play();
+    for (Node child : getChildren()) {
+        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(2), child);
+        fadeTransition.setFromValue(0.0); // Starting opacity
+        fadeTransition.setToValue(1.0);   // Ending opacity
+        fadeTransition.setDelay(Duration.seconds(delay));
+        fadeTransition.playFromStart();
+        delay += 2.0;
     }
-  }
+}
+
+
 }

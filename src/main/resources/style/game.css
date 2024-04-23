@@ -232,3 +232,13 @@ TextField {
     -fx-font-family: 'Orbitron';
     -fx-fill: white;
 }
+.scores-label {
+    -fx-font-size: 16px;
+    -fx-font-family: 'Orbitron';
+    -fx-fill: white;
+}
+.Hiscore {
+    -fx-font-size: 10px;
+    -fx-font-family: 'Orbitron';
+    -fx-fill: white;
+}
