@@ -25,6 +25,18 @@ public class PieceBoard extends GameBoard {
 
 
 
+        // Get the middle block
+        int middleX = (int) Math.floor(blocks.length / 2.0);
+        int middleY = (int) Math.floor(blocks[0].length / 2.0);
+        GameBlock middleBlock = getBlock(middleX, middleY);
+
+        // Draw the circle on the middle block
+        middleBlock.drawCircle();
+
+
+
+
+
     }
     /**
      * Clear the PieceBoard by removing all blocks from it.

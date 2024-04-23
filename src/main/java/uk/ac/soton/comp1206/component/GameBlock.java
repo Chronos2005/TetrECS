@@ -257,6 +257,15 @@ public class GameBlock extends Canvas {
         gc.strokeRoundRect(2, 2, width - 4, height - 4, 8, 8);
     }
 
+    public void drawCircle() {
+        var gc = getGraphicsContext2D();
+        gc.setFill(Color.rgb(169, 169, 169, 0.5)); // 50% transparent gray
+        double centerX = width / 2;
+        double centerY = height / 2;
+        double radius = Math.min(width, height) * 0.4;
+        gc.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+    }
+
 
 
 
