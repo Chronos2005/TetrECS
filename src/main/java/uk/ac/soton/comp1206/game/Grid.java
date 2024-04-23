@@ -158,4 +158,28 @@ public class Grid {
     multimedia = new Multimedia();
     multimedia.playAudio("place.wav");
   }
+
+  // Add these properties to the Grid class
+  private final IntegerProperty aimX = new SimpleIntegerProperty(2);
+  private final IntegerProperty aimY = new SimpleIntegerProperty(2);
+
+  // Add getters for these properties
+  public int getAimX() {
+      return aimX.get();
+  }
+
+  public int getAimY() {
+      return aimY.get();
+  }
+
+  // Add setters for these properties
+  public void setAimX(int x) {
+      aimX.set(x);
+  }
+
+  public void setAimY(int y) {
+      aimY.set(y);
+  }
+
+
 }

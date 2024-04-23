@@ -3,7 +3,6 @@ package uk.ac.soton.comp1206.scene;
 import javafx.animation.*;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
@@ -19,7 +18,6 @@ import uk.ac.soton.comp1206.component.PieceBoard;
 import uk.ac.soton.comp1206.event.GameLoopListener;
 import uk.ac.soton.comp1206.event.LineClearedListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
-import uk.ac.soton.comp1206.event.SwapPieceListener;
 import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.game.GamePiece;
 import uk.ac.soton.comp1206.game.Grid;
@@ -27,11 +25,8 @@ import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -215,6 +210,10 @@ public class ChallengeScene extends BaseScene {
         logger.info("Space bar pressed");
         game.swapCurrentPiece();
       }
+      keyBoardSupport(keyEvent.getCode());
+
+
+
     });
 
   }
@@ -286,6 +285,36 @@ public class ChallengeScene extends BaseScene {
       e.printStackTrace();
     }
     return highscore;
+  }
+
+  public void keyBoardSupport(KeyCode code){
+    switch (code) {
+      case A:
+      case LEFT:
+        game.getGrid().setAimX(Math.max(0, game.getGrid().getAimX() - 1));
+        break;
+      case D:
+      case RIGHT:
+        game.getGrid().setAimX(Math.min(game.getGrid().getCols() - 1, game.getGrid().getAimX() + 1));
+        break;
+      case W:
+      case UP:
+        game.getGrid().setAimY(Math.max(0, game.getGrid() .getAimY() - 1));
+        break;
+      case S:
+      case DOWN:
+        game.getGrid().setAimY(Math.min(game.getGrid().getRows() - 1, game.getGrid().getAimY() + 1));
+        break;
+      case ENTER:
+        // Assuming `currentPiece` is the current GamePiece object
+        if (game.getGrid().canPlayPiece(game.getCurrentPiece(), game.getGrid().getAimX(), game.getGrid().getAimY())) {
+          game.getGrid().playPiece(game.getCurrentPiece(), game.getGrid().getAimX(), game.getGrid().getAimY());
+          game.afterPiece();
+          game.nextPiece();
+        }
+        break;
+
+    }
   }
 }
 
