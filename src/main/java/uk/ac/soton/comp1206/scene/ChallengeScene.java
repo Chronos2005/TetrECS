@@ -313,6 +313,10 @@ public class ChallengeScene extends BaseScene {
           game.nextPiece();
         }
         break;
+      case ESCAPE:
+        gameWindow.loadScene(new MenuScene(gameWindow));
+        game.stopGameLoopTimer();
+
 
     }
   }

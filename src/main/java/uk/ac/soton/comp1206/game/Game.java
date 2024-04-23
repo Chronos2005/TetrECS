@@ -405,4 +405,7 @@ public class Game {
     };
     timer.schedule(task,getTimerDelay());
   }
+  public void stopGameLoopTimer(){
+    timer.cancel();
+  }
 }
