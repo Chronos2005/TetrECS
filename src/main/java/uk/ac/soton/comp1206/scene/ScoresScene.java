@@ -31,51 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/*
-public class ScoresScene extends BaseScene {
 
-    private static final Logger logger = LogManager.getLogger(ScoresScene.class);
-    private ScoresList scoresList ;
-
-    private SimpleListProperty localScores;
-
-
-    public ScoresScene(GameWindow gameWindow, Game game) {
-        super(gameWindow);
-        logger.info("Creating the scores scene");
-        // Set up the observable list of scores
-        ArrayList<Pair<String, Integer>> Scores = new ArrayList<>();
-
-        ObservableList<Pair<String, Integer>> observableList = FXCollections.observableArrayList(Scores);
-        localScores = new SimpleListProperty<Pair<String, Integer>>(observableList);
-
-
-
-
-
-    }
-
-
-    @Override
-    public void initialise() {
-
-    }
-
-    @Override
-    public void build() {
-        logger.info("Building " + this.getClass().getName());
-        root = new GamePane(gameWindow.getWidth(), gameWindow.getHeight());
-        var scoresPane = new StackPane();
-        scoresPane.getStyleClass().add("menu-background");
-        root.getChildren().add(scoresPane);
-        Label localScore = new Label("Local Scores");
-
-
-    }
-
-}
-
- */
 public class ScoresScene extends BaseScene  {
 
     private static final Logger logger = LogManager.getLogger(ScoresScene.class);
@@ -85,6 +41,8 @@ public class ScoresScene extends BaseScene  {
     private SimpleListProperty<Pair<String, Integer>> localScores;
     private SimpleListProperty<Pair<String, Integer>> remoteScores;
     private String recievedMessage;
+    private String name;
+    private Game game;
 
     /**
      * Create a new scene, passing in the GameWindow the scene will be displayed in
@@ -102,9 +60,10 @@ public class ScoresScene extends BaseScene  {
         localScores = new SimpleListProperty<>(observableList);
         remoteScores = new SimpleListProperty<>(remoteobservableList);
         loadScores();
+        this.game = game;
 
 
-        checkNewHighScore(game.getScore());
+
 
     }
 
@@ -112,6 +71,7 @@ public class ScoresScene extends BaseScene  {
     @Override
     public void initialise() {
         logger.info("Initialising the Score screen");
+        checkNewHighScore(game.getScore());
 
 
     }
@@ -149,23 +109,24 @@ public class ScoresScene extends BaseScene  {
         scoresPane.setCenter(scoresBox);
         root.getChildren().add(scoresPane);
         gameWindow.getCommunicator().send("HISCORES DEFAULT");
+
         gameWindow.getCommunicator().addListener(new CommunicationsListener() {
 
             @Override
             public void receiveCommunication(String communication) {
                 logger.info("Listener called");
-                loadOnlineScores(communication);
+                Platform.runLater(() -> {
+                    recievedMessage = communication;
+                    logger.info("recievedMessage:{}",recievedMessage);
+                    loadOnlineScores(communication);
+                    writeOnlineScore(communication);
+                });
+
 
 
             }
         });
         scoresList.reveal();
-
-
-
-
-
-
     }
 
     /**
@@ -220,7 +181,7 @@ public class ScoresScene extends BaseScene  {
         if (!localScores.isEmpty()) {
             int lowestScore = localScores.get(localScores.size() - 1).getValue();
             if (playerScore > lowestScore) {
-                String name = promptForName();
+                 name = promptForName();
                 int insertIndex = localScores.size();
                 for (int i = 0; i < localScores.size(); i++) {
                     if (playerScore > localScores.get(i).getValue()) {
@@ -228,11 +189,15 @@ public class ScoresScene extends BaseScene  {
                         break;
                     }
                 }
+
                 localScores.add(insertIndex, new Pair<>(name, playerScore));
+                while (localScores.size() > 10) {
+                    localScores.remove(localScores.size() - 1);
+                }
                 writeScores();
             }
         } else {
-            String name = promptForName();
+            name = promptForName();
             localScores.add(new Pair<>(name, playerScore));
             writeScores();
         }
@@ -249,7 +214,9 @@ public class ScoresScene extends BaseScene  {
         dialog.setContentText("Please enter your name:");
 
         Optional<String> result = dialog.showAndWait();
-        return result.orElse("Anonymous");
+        name = result.orElse("Anonymous");
+        gameWindow.getCommunicator().send("HISCORE " + name + ":" + game.getScore());
+        return name;
     }
 
 
@@ -258,29 +225,50 @@ public class ScoresScene extends BaseScene  {
      * @param communication the communication received
      */
     private void loadOnlineScores(String communication){
-
-        Platform.runLater(()->
-        {String[] scores = communication.split("\n");
+        if (communication.startsWith("HISCORES")){
+            communication = communication.trim().substring(communication.indexOf(" ")+1);
+            String[] scores = communication.split("\n");
             remoteScores.clear();
             for (String line : scores) {
                 String[] parts = line.split(":");
                 if (parts.length == 2) {
                     String name = parts[0];
                     int score = Integer.parseInt(parts[1]);
-                    logger.info("name:{} score{}",name,score);
                     remoteScores.add(new Pair<>(name, score));
                 }
             }
             remoteScoresList.reveal();
-
-        });
+        }
 
     }
 
-    private void writeOnlineScore(String name, int score) {
+    private void writeOnlineScore(String communication) {
         logger.info("writeOnlineScore  method called");
-        String message = "HISCORE " + name + ":" + score;
-        gameWindow.getCommunicator().send(message);
+        if (communication.startsWith("NEWSCORE")) {
+            communication = communication.trim().substring(communication.indexOf(" ")+1);
+            String[] parts = communication.split(":");
+            String name = parts[0];
+            int score = Integer.parseInt(parts[1]);
+            int insertIndex = remoteScores.size();
+            for (int i = 0; i < remoteScores.size(); i++) {
+                if (score > remoteScores.get(i).getValue()) {
+                    insertIndex = i;
+                    break;
+                }
+            }
+            Pair<String, Integer> newPair = new Pair<>(name, score);
+
+            remoteScores.add(insertIndex, newPair);
+
+            logger.info("name:{} score:{}",name,score);
+            remoteScores.remove(remoteScores.size()-1);
+            remoteScoresList.reveal();
+
+
+
+
+        }
+
     }
 
 
