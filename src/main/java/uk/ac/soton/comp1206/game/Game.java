@@ -26,19 +26,28 @@ import uk.ac.soton.comp1206.event.SwapPieceListener;
  */
 public class Game {
 
-
+  /** The score of the game */
   private final IntegerProperty score;
+  /** The level of the game */
   private final IntegerProperty level;
+  /** The number of lives the player has */
   private final IntegerProperty lives;
+  /** The multiplier of the game */
   private final IntegerProperty multiplier;
+  /** The random number generator */
   private final Random random = new Random();
   private static final Logger logger = LogManager.getLogger(Game.class);
-
+  /** The listener for when the next piece is spawned */
   private NextPieceListener nextPieceListener;
+  /** The piece after the current piece*/
   private GamePiece followingPiece;
+  /** The listener for the game loop */
   private GameLoopListener gameLoopListener;
+  /** The listener for when the pieces are swapped */
   private SwapPieceListener swapPieceListener;
+  /** The listener for when the lines are cleared */
   private  LineClearedListener lineClearedListener;
+  /** The  media object to play sounds and music*/
   private Multimedia media;
 
   /** Number of rows */
@@ -50,9 +59,13 @@ public class Game {
   /** The grid model linked to the game */
   protected final Grid grid;
 
+  /** The current piece being played */
   private GamePiece curentPiece;
+  /** The number of lines to clear */
   private int linesToClear;
+  /** The timer for the game loop */
   private Timer timer;
+
   private  ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
   private Boolean piecePlayed =false;
 
@@ -88,7 +101,7 @@ public class Game {
   /** Initialise a new game and set up anything that needs to be done at the start */
   public void initialiseGame() {
     logger.info("Initialising game");
-    followingPiece = spawmPiece();
+    followingPiece = spawnPiece();
     nextPiece();
     timer = new Timer();
     startGameLoopTimer();
@@ -141,7 +154,7 @@ public class Game {
     return rows;
   }
 
-  public GamePiece spawmPiece() {
+  public GamePiece spawnPiece() {
     var maxPieces = GamePiece.PIECES;
     logger.info("A Random Piece is being picked");
     var piece = GamePiece.createPiece(random.nextInt(maxPieces));
@@ -149,10 +162,13 @@ public class Game {
     return piece;
   }
 
+  /**
+   * Spawns the next piece and sets the current piece to the following piece
+   */
   public void nextPiece() {
 
     curentPiece = followingPiece;
-    followingPiece = spawmPiece();
+    followingPiece = spawnPiece();
     if (nextPieceListener != null) {
       nextPieceListener.nextPiece(curentPiece, followingPiece);
     }
@@ -245,70 +261,119 @@ public class Game {
 
   }
 
-
+  /**
+   * Get the score of the game
+   * @return the score
+   */
   public int getScore() {
     return score.get();
   }
 
+  /**
+   * Get the level of the game
+   * @return the level
+   */
   public IntegerProperty scoreProperty() {
     return score;
   }
 
+  /**
+   * Set the score of the game
+   * @param score the score
+   */
   public void setScore(int score) {
     this.score.set(score);
   }
 
+  /**
+   * Get the level of the game
+   * @return the level
+   */
   public int getLevel() {
     return level.get();
   }
 
+  /**
+   * Get the level of the game
+   * @return the level
+   */
   public IntegerProperty levelProperty() {
     return level;
   }
-
+  /**
+   * Set the level of the game
+   * @param level the level
+   */
   public void setLevel(int level) {
     this.level.set(level);
   }
-
+  /**
+   * Get the number of lives the player has
+   * @return the number of lives
+   */
   public int getLives() {
     return lives.get();
   }
-
+  /**
+   * Get the number of lives the player has
+   * @return the number of lives
+   */
   public IntegerProperty livesProperty() {
     return lives;
   }
-
+  /**
+   * Set the number of lives the player has
+   * @param lives the number of lives
+   */
   public synchronized void setLives(int lives) {
     this.lives.set(lives);
   }
-
+  /**
+   * Get the multiplier of the game
+   * @return the multiplier
+   */
   public int getMultiplier() {
     return multiplier.get();
   }
-
+  /**
+   * Get the multiplier of the game
+   * @return the multiplier
+   */
   public IntegerProperty multiplierProperty() {
     return multiplier;
   }
-
+  /**
+   * Set the multiplier of the game
+   * @param multiplier the multiplier
+   */
   public void setMultiplier(int multiplier) {
     this.multiplier.set(multiplier);
   }
-
+  /**
+   * Set the next piece listener
+   * @param nextPieceListener the listener
+   */
   public void setNextPieceListener(NextPieceListener nextPieceListener) {
     this.nextPieceListener = nextPieceListener;
   }
-
+  /**
+   * Changes the score of the game
+   */
   public void score(int lines, int blocks) {
     var scoreIncrease = lines * blocks * getMultiplier()*10;
     setScore(getScore()+scoreIncrease);
   }
-
+  /**
+   * Changes the level of the game
+   */
   public void level() {
     if (score.get() / 1000 >= 1) {
       level.set((int) Math.floor((double) score.get() / 1000));
     }
   }
-
+  /**
+   * Changes the multiplier of the game
+   */
   public void multiplier(int linesCleared) {
     if (linesCleared > 0) {
       multiplier.set(multiplier.get()+1);
@@ -345,15 +410,20 @@ public class Game {
   }
 
 
-
+  /**
+   * Get the delay for the timer unit gamelooop is called
+   * @return the delay
+   */
   public int getTimerDelay() {
-    int MAX_DELAY = 12000;
-    int MIN_DELAY = 2500;
-    int DELAY_DECREMENT = 500;
-    int delay = MAX_DELAY - (level.get() * DELAY_DECREMENT);
-    return Math.max(delay, MIN_DELAY);
+    int maxDelay = 12000;
+    int minDelay = 2500;
+    int delayDecrement = 500;
+    int delay = maxDelay - (level.get() * delayDecrement
+    return Math.max(delay, minDelay);
   }
-
+  /**
+   * The game loop that runs every time the timer runs out
+   */
   private void gameLoop() {
     Platform.runLater(()->{
         setLives(getLives() - 1);
@@ -374,27 +444,44 @@ public class Game {
     });
 
   }
-
+  /**
+   * Set the game loop listener
+   * @param listener the listener
+   */
   public void setOnGameLoop(GameLoopListener listener) {
     this.gameLoopListener = listener;
   }
-
+  /**
+   * Set the swap piece listener
+   * @param listener the listener
+   */
   public void setSwapPieceListener(SwapPieceListener listener) {
     this.swapPieceListener = listener;
   }
-
+  /**
+   * Get the current piece
+   * @return the current piece
+   */
   public GamePiece getCurrentPiece(){
       return curentPiece;
   }
-
+  /**
+   * Get the following piece
+   * @return the following piece
+   */
   public GamePiece getFollowingPiece(){
       return followingPiece;
   }
-
+  /**
+   * Set the line cleared listener
+   * @param listener the listener
+   */
   public void setOnLineCleared(LineClearedListener listener){
     this.lineClearedListener=listener;
   }
-
+  /**
+   * Start the game loop timer
+   */
   public void startGameLoopTimer(){
     TimerTask task = new TimerTask() {
       @Override
@@ -405,7 +492,17 @@ public class Game {
     };
     timer.schedule(task,getTimerDelay());
   }
+  /**
+   * Stop the game loop timer
+   */
   public void stopGameLoopTimer(){
     timer.cancel();
+  }
+  /**
+   * Set the following piece
+   * @param piece the piece
+   */
+  public void setFollowingPiece(GamePiece piece){
+    followingPiece = piece;
   }
 }
