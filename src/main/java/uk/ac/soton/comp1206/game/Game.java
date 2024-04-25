@@ -418,7 +418,7 @@ public class Game {
     int maxDelay = 12000;
     int minDelay = 2500;
     int delayDecrement = 500;
-    int delay = maxDelay - (level.get() * delayDecrement
+    int delay = maxDelay - (level.get() * delayDecrement);
     return Math.max(delay, minDelay);
   }
   /**
