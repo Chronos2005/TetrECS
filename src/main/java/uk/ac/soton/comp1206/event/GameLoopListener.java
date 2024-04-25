@@ -1,7 +1,12 @@
 package uk.ac.soton.comp1206.event;
-
+/**
+ * The Game Loop Listener is used to handle the event when the game loop is triggered.
+ */
 public interface GameLoopListener {
-    void onGameLoop(); // Method triggered on each game loop iteration
+    /**
+     * Handle the game loop event
+     */
+    void onGameLoop();
 
 
 }
