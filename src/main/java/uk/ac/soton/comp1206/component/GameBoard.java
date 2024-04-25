@@ -174,6 +174,9 @@ public class GameBoard extends GridPane {
         }
     }
 
+    /**Uses the GameBlock class to fade out the blocks in the set of coordinates
+     * @param blocksToFade the set of coordinates to fade out
+     */
     public void fadeOut(Set<GameBlockCoordinate> blocksToFade) {
         for (GameBlockCoordinate coords : blocksToFade) {
             GameBlock block = getBlock(coords.getX(), coords.getY()); // Assuming you have getBlock method

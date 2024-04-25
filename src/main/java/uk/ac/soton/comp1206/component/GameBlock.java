@@ -44,12 +44,15 @@ public class GameBlock extends Canvas {
             Color.MEDIUMPURPLE,
             Color.PURPLE
     };
-
+    /**The gameboard which the player plays on */
     private final GameBoard gameBoard;
+    /**The timer for the fade out animation */
     private AnimationTimer fadeOutTimer;  // To handle the fade out animation
-
+    /**The width  of the block */
     private final double width;
+    /**The height of the block */
     private final double height;
+    /**Whether the mouse is hovering over the block */
     private boolean isHovered = false;
 
     /**
@@ -66,8 +69,8 @@ public class GameBlock extends Canvas {
      * The value of this block (0 = empty, otherwise specifies the colour to render as)
      */
     private final IntegerProperty value = new SimpleIntegerProperty(0);
-    private static final int FADE_DURATION_MILLIS = 500; // Duration of the fade-out animation in milliseconds
-    private static final int FADE_STEPS = 20; // Number of steps in the animation
+    /**The duration of the fade out animation */
+    private static final int FADE_DURATION_MILLIS = 500;
 
     /**
      * Create a new single Game Block
@@ -201,6 +204,9 @@ public class GameBlock extends Canvas {
         value.bind(input);
     }
 
+    /**
+     * Handles the fade out animation when a block is cleared
+     */
     public void fadeOut() {
     // Stop a fade-out animation in progress (if any)
     if (fadeOutTimer != null) {
@@ -243,20 +249,21 @@ public class GameBlock extends Canvas {
 
     fadeOutTimer.start();
 }
-
+    /**
+     * Paint the block with a highlight border when hovered
+     */
     private void paintHovered() {
         var gc = getGraphicsContext2D();
         gc.clearRect(0, 0, width, height);
-
-        // ... Fill with regular block color ...
-        // ... Example: (Call paintEmpty or paintColor here) ...
 
         // Draw a highlight border
         gc.setStroke(Color.YELLOW);
 
         gc.strokeRoundRect(2, 2, width - 4, height - 4, 8, 8);
     }
-
+    /**
+     * Draw a circle in the center of the block
+     */
     public void drawCircle() {
         var gc = getGraphicsContext2D();
         gc.setFill(Color.rgb(169, 169, 169, 0.5)); // 50% transparent gray

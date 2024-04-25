@@ -3,12 +3,25 @@ package uk.ac.soton.comp1206.component;
 import uk.ac.soton.comp1206.game.GamePiece;
 import uk.ac.soton.comp1206.game.Grid;
 
+/**
+ * The PieceBoard is used to display the current piece that is being controlled by the player.
+ */
 public class PieceBoard extends GameBoard {
+    /**
+     * Create a new PieceBoard with the given grid and dimensions.
+     * @param grid grid to use
+     * @param width width of the board
+     * @param height height of the board
+     */
     public PieceBoard(Grid grid, double width, double height) {
         super(grid, width, height);
 
     }
 
+    /**
+     * Set the piece to display on the PieceBoard
+     * @param piece the piece to display
+     */
     public void settingPieceToDisplay(GamePiece piece){
         clear();
 
