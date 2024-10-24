@@ -31,17 +31,39 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * The Scores Scene is a scene that displays the high scores of the game
+ */
 public class ScoresScene extends BaseScene  {
 
     private static final Logger logger = LogManager.getLogger(ScoresScene.class);
+    /**
+     * The list of scores
+     */
     private ScoresList scoresList;
+    /**
+     * The list of remote scores
+     */
     private ScoresList remoteScoresList;
-
+    /**
+     * The observable list of scores
+     */
     private SimpleListProperty<Pair<String, Integer>> localScores;
+    /**
+     * The observable list of remote scores
+     */
     private SimpleListProperty<Pair<String, Integer>> remoteScores;
+    /**
+     * The received message
+     */
     private String recievedMessage;
+    /**
+     * The name of the player
+     */
     private String name;
+    /**
+     * The game
+     */
     private Game game;
 
     /**
@@ -67,7 +89,9 @@ public class ScoresScene extends BaseScene  {
 
     }
 
-
+    /**
+     * Initialise the scores scene
+     */
     @Override
     public void initialise() {
         logger.info("Initialising the Score screen");
@@ -76,6 +100,9 @@ public class ScoresScene extends BaseScene  {
 
     }
 
+    /**
+     * Build the scores layout
+     */
     @Override
     public void build() {
         logger.info("Building " + this.getClass().getName());
@@ -242,6 +269,10 @@ public class ScoresScene extends BaseScene  {
 
     }
 
+    /**
+     * Write the online score to the list
+     * @param communication the communication received
+     */
     private void writeOnlineScore(String communication) {
         logger.info("writeOnlineScore  method called");
         if (communication.startsWith("NEWSCORE")) {
@@ -263,10 +294,6 @@ public class ScoresScene extends BaseScene  {
             logger.info("name:{} score:{}",name,score);
             remoteScores.remove(remoteScores.size()-1);
             remoteScoresList.reveal();
-
-
-
-
         }
 
     }

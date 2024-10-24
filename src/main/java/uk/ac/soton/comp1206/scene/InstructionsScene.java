@@ -18,10 +18,20 @@ import uk.ac.soton.comp1206.ui.GameWindow;
 
 import java.util.Objects;
 
+/**
+ * The Instructions Scene is a scene that displays the instructions of the game
+ */
 public class InstructionsScene extends BaseScene {
+  /**
+   * Logger to help with debugging
+   */
   private static final Logger logger = LogManager.getLogger(InstructionsScene.class);
-  private GamePiece gamePiece;
 
+
+  /**
+   * Create a new Instructions scene
+   * @param gameWindow the Game Window
+   */
   public InstructionsScene(GameWindow gameWindow) {
     super(gameWindow);
     logger.info("Creating Instructions Scene");
@@ -65,7 +75,12 @@ public class InstructionsScene extends BaseScene {
     root.getChildren().add(instructionsPane);
   }
 
+  /**
+   * Create a VBox containing the game pieces
+   * @return VBox containing the game pieces
+   */
   public VBox createBlocks() {
+    logger.info("Creating Game Pieces for the intructions scene");
     Text text = new Text("Game Pieces");
     text.getStyleClass().add("title");
     GridPane gridPane = new GridPane();

@@ -1,11 +1,6 @@
 package uk.ac.soton.comp1206.game;
 
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -66,8 +61,8 @@ public class Game {
   /** The timer for the game loop */
   private Timer timer;
 
-  private  ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-  private Boolean piecePlayed =false;
+
+
 
 
 
@@ -154,10 +149,14 @@ public class Game {
     return rows;
   }
 
+  /**
+   * Creates a piece
+   * @return the piece  that is created
+   */
   public GamePiece spawnPiece() {
-    var maxPieces = GamePiece.PIECES;
+    var totalPieces = GamePiece.PIECES;
     logger.info("A Random Piece is being picked");
-    var piece = GamePiece.createPiece(random.nextInt(maxPieces));
+    var piece = GamePiece.createPiece(random.nextInt(totalPieces));
     logger.info("The Random peiece {} has been picked", random);
     return piece;
   }
@@ -187,7 +186,7 @@ public class Game {
     multiplier(linesToClear);
     level();
 
-    executorService.shutdown();
+
 
     timer.cancel();
     timer = new Timer();
@@ -211,7 +210,7 @@ public class Game {
    * Checks if any columns need to be
    */
   public void checkingVerticalLines(){
-    logger.info("Checkig vertical line");
+    logger.info("Checking vertical line");
     ArrayList<GameBlockCoordinate> myList = new ArrayList<>();
 
     for(int x=0;x<cols;x++){
@@ -270,7 +269,7 @@ public class Game {
   }
 
   /**
-   * Get the level of the game
+   * Get the score property of the game
    * @return the level
    */
   public IntegerProperty scoreProperty() {
@@ -294,7 +293,7 @@ public class Game {
   }
 
   /**
-   * Get the level of the game
+   * Get the level property of the game
    * @return the level
    */
   public IntegerProperty levelProperty() {
@@ -358,6 +357,8 @@ public class Game {
   }
   /**
    * Changes the score of the game
+   * @param lines the number of lines cleared
+   * @param blocks the number of blocks cleared
    */
   public void score(int lines, int blocks) {
     var scoreIncrease = lines * blocks * getMultiplier()*10;
@@ -373,6 +374,7 @@ public class Game {
   }
   /**
    * Changes the multiplier of the game
+   * @param linesCleared the number of lines cleared
    */
   public void multiplier(int linesCleared) {
     if (linesCleared > 0) {

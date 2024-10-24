@@ -7,17 +7,31 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.game.Game;
 
+/**
+ * Handles the audio being played from files
+ */
 public class Multimedia {
     private static final Logger logger = LogManager.getLogger(Multimedia.class);
+    /**
+     * The audio player
+     */
     private MediaPlayer audioPlayer;
+    /**
+     * The music player
+     */
     private MediaPlayer musicPlayer;
+    /**
+     * The media object
+     */
     private static Media media;
-
+    /**
+     * Whether sound is enabled
+     */
   private static boolean soundeEnabled =true;
 
     /**
-     *
-     * @param filename
+     * Plays the audio file
+     * @param filename the file to play
      */
   public void playAudio(String filename){
       try {
@@ -36,8 +50,8 @@ public class Multimedia {
   }
 
     /**
-     *
-      * @param filename
+     *plays the music file
+     * @param filename the file to play
      */
   public void playMusic(String filename){
         try {
@@ -56,6 +70,9 @@ public class Multimedia {
         }
     }
 
+    /**
+     * Stops the music
+     */
     public void stopMusic() {
     if (musicPlayer != null) {
         musicPlayer.stop();

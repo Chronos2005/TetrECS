@@ -53,6 +53,11 @@ public class ChallengeScene extends BaseScene {
   private PieceBoard currentPieceBoard;
 
   /**
+   * The main pane whcih eveerything will be displayed on
+   */
+  protected BorderPane mainPane;
+
+  /**
    * Create a new Single Player challenge scene
    *
    * @param gameWindow the Game Window
@@ -77,7 +82,7 @@ public class ChallengeScene extends BaseScene {
     challengePane.getStyleClass().add("challenge-background");
     root.getChildren().add(challengePane);
 
-    var mainPane = new BorderPane();
+    mainPane = new BorderPane();
     challengePane.getChildren().add(mainPane);
     Grid grid = new Grid(3, 3);
     Grid grid2 = new Grid(3, 3);
@@ -287,6 +292,10 @@ public class ChallengeScene extends BaseScene {
     return highscore;
   }
 
+    /**
+     * Handle keyboard input
+     * @param code the key code
+     */
   public void keyBoardSupport(KeyCode code){
     switch (code) {
       case A:

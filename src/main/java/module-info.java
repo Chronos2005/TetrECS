@@ -1,3 +1,6 @@
+/**
+ * Module information for the COMP1206 coursework.
+ */
 module uk.ac.soton.comp1206 {
     requires java.scripting;
     requires javafx.controls;

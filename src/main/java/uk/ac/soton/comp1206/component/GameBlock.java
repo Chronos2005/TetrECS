@@ -5,7 +5,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,7 +69,7 @@ public class GameBlock extends Canvas {
      */
     private final IntegerProperty value = new SimpleIntegerProperty(0);
     /**The duration of the fade out animation */
-    private static final int FADE_DURATION_MILLIS = 500;
+    private static final int fadeDuration = 500;
 
     /**
      * Create a new single Game Block
@@ -131,6 +130,7 @@ public class GameBlock extends Canvas {
             } else {
                 paintColor(COLOURS[value.get()]);
             }
+
         }
 
     }
@@ -141,6 +141,7 @@ public class GameBlock extends Canvas {
     private void paintEmpty() {
         var gc = getGraphicsContext2D();
         gc.clearRect(0, 0, width, height);
+
 
         // Draw rounded rectangle for empty tile
         gc.setFill(Color.rgb(225, 225, 225,0.4)); // Light gray color
@@ -157,13 +158,21 @@ public class GameBlock extends Canvas {
      * Paint this canvas with the given colour
      * @param colour the colour to paint
      */
-    private void paintColor(Paint colour) {
+    private void paintColor(Color colour) {
         var gc = getGraphicsContext2D();
         // Clear
         gc.clearRect(0, 0, width, height);
+        // Create a linear gradient fill
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 1, 1, true, // proportional and cycle colors
+                CycleMethod.NO_CYCLE, // don't cycle colors
+                new Stop(0, colour), // start color
+                new Stop(1, Color.WHITE) // end color
+        );
+
 
         // Draw filled rounded rectangle
-        gc.setFill(colour);
+        gc.setFill(gradient);
         gc.fillRoundRect(2, 2, width - 4, height - 4, 8, 8); // Rounded rectangle with radius 8
 
         // Draw border
@@ -222,9 +231,9 @@ public class GameBlock extends Canvas {
         private double opacity = 1.0;
 
         @Override
-        public void handle(long currentNanoTime) {
-            double elapsedMillis = System.currentTimeMillis() - startTime;
-            double progress = Math.min(elapsedMillis / FADE_DURATION_MILLIS, 1.0);
+        public void handle(long currentTime) {
+            double elapsedTime = System.currentTimeMillis() - startTime;
+            double progress = Math.min(elapsedTime / fadeDuration, 1.0);
 
             // Update opacity based on progress
             opacity = 1.0 - progress;

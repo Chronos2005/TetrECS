@@ -123,11 +123,11 @@ public class Grid {
   public boolean canPlayPiece(GamePiece piece, int positionX, int positionY) {
     logger.info("Checking if the piece can be played");
     int[][] blocks = piece.getBlocks();
-    for (var blockX = 0; blockX < blocks.length; blockX++) {
-      for (var blockY = 0; blockY < blocks.length; blockY++) {
-        var blockValue = blocks[blockX][blockY];
+    for (var x = 0; x < blocks.length; x++) {
+      for (var y = 0; y < blocks.length; y++) {
+        var blockValue = blocks[x][y];
         if (blockValue > 0) {
-          var gridValue = get(positionX + blockX - 1, positionY + blockY - 1);
+          var gridValue = get(positionX + x - 1, positionY + y - 1);
           if (gridValue != 0) return false;
         }
       }
@@ -147,11 +147,11 @@ public class Grid {
     int value = piece.getValue();
     int[][] blocks = piece.getBlocks();
 
-    for (var blockX = 0; blockX < blocks.length; blockX++) {
-      for (var blockY = 0; blockY < blocks.length; blockY++) {
-        var blockValue = blocks[blockX][blockY];
+    for (var x = 0; x < blocks.length; x++) {
+      for (var y = 0; y < blocks.length; y++) {
+        var blockValue = blocks[x][y];
         if (blockValue > 0) {
-          set(positionX + blockX - 1, positionY + blockY - 1, value);
+          set(positionX + x - 1, positionY + y - 1, value);
         }
       }
     }
@@ -159,24 +159,42 @@ public class Grid {
     multimedia.playAudio("place.wav");
   }
 
-  // Add these properties to the Grid class
+  /** X coordinate of the aim */
   private final IntegerProperty aimX = new SimpleIntegerProperty(2);
+  /** Y coordinate of the aim */
   private final IntegerProperty aimY = new SimpleIntegerProperty(2);
 
-  // Add getters for these properties
+  /**
+   * Get the X coordinate of the aim
+   *
+   * @return the X coordinate of the aim
+   */
   public int getAimX() {
       return aimX.get();
   }
-
+  /**
+   * Get the Y coordinate of the aim
+   *
+   * @return the Y coordinate of the aim
+   */
   public int getAimY() {
       return aimY.get();
   }
 
-  // Add setters for these properties
+  /**
+   * Set the X coordinate of the aim
+   *
+   * @param x the X coordinate of the aim
+   */
   public void setAimX(int x) {
       aimX.set(x);
   }
 
+    /**
+     * Set the Y coordinate of the aim
+     *
+     * @param y the Y coordinate of the aim
+     */
   public void setAimY(int y) {
       aimY.set(y);
   }

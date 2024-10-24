@@ -65,9 +65,10 @@ public class MenuScene extends BaseScene {
         mainPane.setTop(title);
         // Center align the title
         BorderPane.setAlignment(title, Pos.CENTER);
+
         // TranslateTransition animation for the title
         TranslateTransition titleTransition = new TranslateTransition(Duration.seconds(1), title);
-        titleTransition.setFromY(-50); // Start the title 50 pixels above its original position
+        titleTransition.setFromY(50); // Start the title 50 pixels above its original position
         titleTransition.setToY(0); // Move the title to its original position
         titleTransition.setInterpolator(Interpolator.EASE_OUT); // Apply easing function
         titleTransition.setCycleCount(Animation.INDEFINITE); // Loop indefinitely
@@ -118,6 +119,7 @@ public class MenuScene extends BaseScene {
     @Override
     public void initialise() {
 
+
     }
 
     /**
@@ -135,11 +137,17 @@ public class MenuScene extends BaseScene {
      */
     private void openInstructions(ActionEvent event){
         logger.info("Attempting to open the instructions page");
+        multimedia.stopMusic();
         gameWindow.startInstruction();
     }
 
+    /**
+     * Handle when the Multiplayer button is pressed
+     * @param event multiplayer button pressed
+     */
     private void openLobby(ActionEvent event){
         logger.info("Attempting to open the multiplayer Lobby");
+        multimedia.stopMusic();
         gameWindow.startMultiplayerLobby();
     }
 

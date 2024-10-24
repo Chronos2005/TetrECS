@@ -10,9 +10,11 @@ import uk.ac.soton.comp1206.ui.GameWindow;
  */
 public abstract class BaseScene {
 
+    /** The game window which the game is played in */
     protected final GameWindow gameWindow;
-
+    /** The root pane of the scene */
     protected GamePane root;
+    /** The JavaFX scene */
     protected Scene scene;
 
     /**

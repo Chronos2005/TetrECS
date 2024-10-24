@@ -33,7 +33,7 @@ public class ScoresList extends VBox {
   public ScoresList() {
     getStyleClass().add("scorelist");
     scoresProperty().addListener((observable, oldValue, newValue) -> updateScores(newValue));
-  }
+}
 
   /**
    * Get the scores property

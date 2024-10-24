@@ -18,6 +18,9 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * The Lobby Scene is a scene that displays all current games and chat for the games
+ */
 public class LobbyScene extends BaseScene{
 
     /**
@@ -38,7 +41,7 @@ public class LobbyScene extends BaseScene{
      */
     private BorderPane borderPane = new BorderPane();
     private TextFlow textFlow;
-    private ScrollPane scrollPane;
+    private ScrollPane scroller;
     private boolean scrollToBottom;
 
 
@@ -197,19 +200,14 @@ public class LobbyScene extends BaseScene{
      */
     private BorderPane createChannelUI(String channelName){
 
-        var pane = new BorderPane();
+        var chatBox = new BorderPane();
+        scroller = new ScrollPane();
+        scroller.setStyle("-fx-background: transparent; -fx-background-color: rgba(0, 0, 0, 0);");
+        textFlow = new TextFlow();
+        scroller.setContent(textFlow);
+        scroller.setFitToWidth(true);
+        chatBox.setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;");
 
-        scrollPane = new ScrollPane();
-
-
-        //Text flow holds the messages which ave already been sent
-         textFlow = new TextFlow();
-        scrollPane.setContent(textFlow);
-        scrollPane.setFitToWidth(true);
-        pane.setStyle("-fx-background-color: transparent;");
-
-
-        // Create the HBox for the bottom region
         HBox hBox = new HBox();
         //Text field is the message which get sent
         messageToSend = new TextField();
@@ -218,15 +216,15 @@ public class LobbyScene extends BaseScene{
         Button button = new Button("Send");
         button.setOnAction((event)-> sendCurrentMessage(messageToSend.getText()));
         hBox.getChildren().addAll(messageToSend, button);
-
+        //Send message when enter is pressed
         messageToSend.setOnKeyPressed((event) -> {
             if (event.getCode() != KeyCode.ENTER) return;
             sendCurrentMessage(messageToSend.getText());
         });
 
 
-
-        pane.setCenter(scrollPane);
+        //Add the scroller to the chat box
+        chatBox.setCenter(scroller);
         HBox.setHgrow(messageToSend,Priority.ALWAYS);
         // Create the buttons
 
@@ -239,8 +237,8 @@ public class LobbyScene extends BaseScene{
          buttonBox = new HBox(leaveChannelButton);
         VBox buttonVBox = new VBox();
         buttonVBox.getChildren().addAll(hBox,buttonBox);
-        pane.setBottom(buttonVBox);
-        return pane;
+        chatBox.setBottom(buttonVBox);
+        return chatBox;
 
 
     }
@@ -267,19 +265,28 @@ public class LobbyScene extends BaseScene{
 
             // Add the new Text object to the TextFlow
             textFlow.getChildren().add(receivedMessageText);
-            if(scrollPane.getVvalue()==0.0f|| scrollPane.getVvalue()>0.9f){
+            if(scroller.getVvalue()==0.0f|| scroller.getVvalue()>0.9f){
                 scrollToBottom=true;
             }
         }
 
     }
 
+
+    /**
+     * Starts the game
+     * @param communication the communication received
+     */
     public void startGame(String communication){
         if(communication.startsWith("START")){
             gameWindow.startMultiplayerGame();
         }
     }
 
+    /**
+     * Hosts the UI
+     * @param communication the communication received
+     */
     public void  hostUI(String communication){
         if (communication.startsWith("HOST")){
             Button startGameButton = new Button("Start Game");
@@ -287,6 +294,11 @@ public class LobbyScene extends BaseScene{
             buttonBox.getChildren().add(startGameButton);
         }
     }
+
+    /**
+     * Handles errors
+     * @param communication the communication received
+     */
 
     public void errorHandling(String communication){
         if (communication.startsWith("ERROR")){
